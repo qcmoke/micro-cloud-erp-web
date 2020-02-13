@@ -53,7 +53,12 @@
             @keyup.enter.native="handleLogin"
           />
         </el-form-item>
-        <img :src="imageCode" alt="codeImage" class="code-image" @click="getCodeImage">
+        <img
+          :src="imageCode"
+          alt="codeImage"
+          class="code-image"
+          @click="getCodeImage"
+        >
         <el-button
           :loading="loading"
           type="primary"
@@ -183,7 +188,7 @@ export default {
   data() {
     return {
       tabActiveName: 'bindLogin',
-      codeUrl: `${process.env.VUE_APP_BASE_API}auth/captcha`,
+      codeUrl: `${process.env.VUE_APP_BASE_API}auth/resource/captcha`,
       socialLoginUrl: socialLoginUrl,
       login: {
         type: 'up'
@@ -197,8 +202,8 @@ export default {
         { img: 'microsoft.png', name: 'microsoft', radius: false }
       ],
       loginForm: {
-        username: '',
-        password: '',
+        username: 'qcmoke',
+        password: '1234qwer',
         bindUsername: '',
         bindPassword: '',
         signUsername: '',
@@ -385,7 +390,7 @@ export default {
         }
         params.token = null
         that
-          .$post('auth/social/bind/login', params)
+          .$post('/auth/resource/social/bind/login', params)
           .then(r => {
             const data = r.data.data
             this.saveLoginData(data)
@@ -421,7 +426,7 @@ export default {
         }
         params.token = null
         that
-          .$post('auth/social/sign/login', params)
+          .$post('/auth/resource/social/sign/login', params)
           .then(r => {
             const data = r.data.data
             this.saveLoginData(data)
@@ -448,11 +453,15 @@ export default {
           password_c = true
         }
       })
-      this.$refs.loginForm.validateField('code', e => { if (!e) { code_c = true } })
+      this.$refs.loginForm.validateField('code', e => {
+        if (!e) {
+          code_c = true
+        }
+      })
       if (username_c && password_c && code_c) {
         this.loading = true
         const that = this
-        this.$login('auth/oauth/token', {
+        this.$login('/auth/oauth/token', {
           ...that.loginForm,
           key: this.randomId
         })
@@ -462,7 +471,7 @@ export default {
             // 获取当前用户信息、缓存principal并跳转到/
             this.getUserDetailInfo()
             // 登录记录回调
-            // this.loginSuccessCallback()
+            this.loginSuccessCallback()
           })
           .catch(error => {
             console.error(error)
@@ -481,9 +490,10 @@ export default {
       this.$store.commit('account/setExpireTime', expireTime)
     },
     getUserDetailInfo() {
-      this.$get('auth/user')
+      this.$get('/auth/resource/user/detail')
         .then(r => {
-          this.$store.commit('account/setUser', r.data.principal)
+          const user = r.data.data
+          this.$store.commit('account/setUser', user)
           this.$message({
             message: this.$t('tips.loginSuccess'),
             type: 'success'
@@ -501,7 +511,7 @@ export default {
         })
     },
     loginSuccessCallback() {
-      this.$get('system/user/success').catch(e => {
+      this.$get('/ums/user/success').catch(e => {
         console.log(e)
       })
     }

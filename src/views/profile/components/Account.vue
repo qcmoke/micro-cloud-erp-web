@@ -80,16 +80,20 @@ export default {
           this.buttonLoading = true
           const temp = { ...this.user }
           temp.lastLoginTime = temp.modifyTime = temp.createTime = null
-          this.$put('system/user/profile', { ...temp }).then(() => {
-            this.buttonLoading = false
-            this.$message({
-              message: this.$t('tips.updateSuccess'),
-              type: 'success'
-            })
-            if (this.change) {
-              this.user.deptName = this.deptName
+          this.$put('ums/user/profile', { ...temp }).then((r) => {
+            if (r.data.status === 200) {
+              this.buttonLoading = false
+              this.$message({
+                message: this.$t('tips.updateSuccess'),
+                type: 'success'
+              })
+              if (this.change) {
+                this.user.deptName = this.deptName
+              }
+              this.$store.commit('account/setUser', this.user)
+            } else {
+              return false
             }
-            this.$store.commit('account/setUser', this.user)
           })
         } else {
           return false
@@ -101,7 +105,7 @@ export default {
       this.change = true
     },
     initDept() {
-      this.$get('system/dept').then((r) => {
+      this.$get('ums/dept').then((r) => {
         this.depts = r.data.data.rows
       }).catch((error) => {
         console.error(error)

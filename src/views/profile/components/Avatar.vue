@@ -106,9 +106,18 @@ export default {
         return
       }
       this.updating = true
-      this.$put('system/user/avatar', { avatar }).then(() => {
-        this.$emit('success', avatar)
-        this.updating = false
+      this.$put('ums/user/avatar', { avatar }).then((r) => {
+        const status = r.data.status
+        if (status === 200) {
+          this.$emit('success', avatar)
+          this.updating = false
+        } else {
+          this.$message({
+            message: this.$t('tips.updateFailed'),
+            type: 'error'
+          })
+          this.updating = false
+        }
       }).catch((r) => {
         console.error(r)
         this.$message({

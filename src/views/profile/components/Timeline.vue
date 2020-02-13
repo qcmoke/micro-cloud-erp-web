@@ -25,7 +25,7 @@ export default {
   },
   methods: {
     getTimeLine() {
-      this.$get('system/loginLog/currentUser').then((r) => {
+      this.$get('/ums/log/login/me').then((r) => {
         this.timeline = r.data.data
       })
     }

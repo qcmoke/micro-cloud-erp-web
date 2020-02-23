@@ -1,0 +1,34 @@
+/**
+vscode vue和js @ 路径定位和只能提示
+
+1、安装插件：Vue.js Extension Pack
+
+
+2、在项目package.json所在同级目录下创建文件jsconfig.json：
+  {
+    "compilerOptions": {
+      "baseUrl": "./",
+      "paths": {
+        "@/*": [
+          "src/*"
+        ]
+      }
+    },
+    "exclude": [
+      "node_modules"
+    ]
+  }
+*/
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    }
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

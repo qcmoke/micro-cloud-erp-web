@@ -36,8 +36,8 @@
         <el-select v-model="user.roleId" multiple value="" placeholder="" style="width:100%">
           <el-option
             v-for="item in roles"
-            :key="item.roleId"
-            :label="item.roleName"
+            :key="item.rid"
+            :label="item.rnameZh"
             :value="String(item.roleId)"
           />
         </el-select>
@@ -98,7 +98,7 @@ export default {
           { min: 4, max: 10, message: this.$t('rules.range4to10'), trigger: 'blur' },
           { validator: (rule, value, callback) => {
             if (!this.user.userId) {
-              this.$get(`system/user/check/${value}`).then((r) => {
+              this.$get(`/ums/user/check/${value}`).then((r) => {
                 if (!r.data) {
                   callback(this.$t('rules.usernameExist'))
                 } else {
@@ -169,7 +169,7 @@ export default {
       }
     },
     initDept() {
-      this.$get('system/dept').then((r) => {
+      this.$get('/ums/dept').then((r) => {
         this.depts = r.data.data.rows
       }).catch((error) => {
         console.error(error)
@@ -180,7 +180,7 @@ export default {
       })
     },
     initRoles() {
-      this.$get('system/role/options').then((r) => {
+      this.$get('/ums/role/options').then((r) => {
         this.roles = r.data.data
       }).catch((error) => {
         console.error(error)
@@ -203,7 +203,7 @@ export default {
           if (!this.user.userId) {
             // create
             this.user.roleId = this.user.roleId.join(',')
-            this.$post('system/user', { ...this.user }).then(() => {
+            this.$post('/ums/user', { ...this.user }).then(() => {
               this.buttonLoading = false
               this.isVisible = false
               this.$message({
@@ -216,7 +216,7 @@ export default {
             // update
             this.user.roleId = this.user.roleId.join(',')
             this.user.createTime = this.user.modifyTime = this.user.lastLoginTime = null
-            this.$put('system/user', { ...this.user }).then(() => {
+            this.$put('/ums/user', { ...this.user }).then(() => {
               this.buttonLoading = false
               this.isVisible = false
               this.$message({

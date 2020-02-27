@@ -209,7 +209,7 @@ export default {
       this.search()
     },
     exportExcel() {
-      this.$download('system/user/excel', {
+      this.$download('/ums/user/excel', {
         pageSize: this.pagination.size,
         pageNum: this.pagination.num,
         ...this.queryParams
@@ -236,7 +236,7 @@ export default {
         this.selection.forEach((u) => {
           userNames.push(u.username)
         })
-        this.$put('system/user/password/reset', {
+        this.$put('/ums/user/password/reset', {
           usernames: userNames.join(',')
         }).then(() => {
           this.$message({
@@ -293,7 +293,7 @@ export default {
     },
     delete(userIds) {
       this.loading = true
-      this.$delete(`system/user/${userIds}`).then(() => {
+      this.$delete(`/ums/user/${userIds}`).then(() => {
         this.$message({
           message: this.$t('tips.deleteSuccess'),
           type: 'success'
@@ -323,7 +323,7 @@ export default {
         params.createTimeTo = this.queryParams.timeRange[1]
       }
       this.loading = true
-      this.$get('system/user', {
+      this.$get('/ums/user', {
         ...params
       }).then((r) => {
         const data = r.data.data

@@ -33,11 +33,15 @@ module.exports = {
       errors: true
     },
     proxy: {
+      // 在开发环境下将 API 请求代理到 API 服务器
       // change xxx-api/login => mock/login
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
+        // 要访问的跨域的域名
         target: 'http://localhost:9070/',
+        // 开启代理：在本地会创建一个虚拟服务端，然后发送请求的数据，并同时接收请求的数据，这样客户端端和服务端进行数据的交互就不会有跨域问题
         changeOrigin: true,
+        ws: false,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''
         }

@@ -1,4 +1,7 @@
 <template>
+  <!--
+    使用后端生成的路由表渲染左侧菜单(不包含静态路由表)
+ -->
   <div :class="{'has-logo':showLogo}">
     <logo v-if="showLogo" :collapse="isCollapse" />
     <el-scrollbar wrap-class="scrollbar-wrapper">
@@ -12,6 +15,7 @@
         :collapse-transition="true"
         mode="vertical"
       >
+        <!-- 遍历路由加入到菜单列表中 -->
         <sidebar-item v-for="route in userRoutes" :key="route.path" :item="route" :base-path="route.path" />
       </el-menu>
     </el-scrollbar>

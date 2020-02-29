@@ -276,6 +276,7 @@ export default {
     }
   },
   mounted() {
+    // 清空所有缓存
     db.clear()
     this.getCodeImage()
   },
@@ -461,6 +462,7 @@ export default {
       if (username_c && password_c && code_c) {
         this.loading = true
         const that = this
+        // 请求获取token
         this.$login('/auth/oauth/token', {
           ...that.loginForm,
           key: this.randomId
@@ -468,9 +470,9 @@ export default {
           .then(r => {
             const data = r.data
             this.saveLoginData(data)
-            // 获取当前用户信息、缓存principal并跳转到/
+            // 获取当前用户信息并缓存，然后跳转到/
             this.getUserDetailInfo()
-            // 登录记录回调
+            // 登录成功记录回调
             this.loginSuccessCallback()
           })
           .catch(error => {

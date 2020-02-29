@@ -129,49 +129,49 @@ router.beforeEach((to, from, next) => {
   if (whiteList.indexOf(to.path) !== -1) {
     // console.log('进入的是路由白名单，放行')
     next()
-    return
-  }
-  const accessToken = store.state.account.accessToken
-  const user = store.state.account.user
-  // 缓存中有token和用户信息才允许进入
-  if (!accessToken.length || !user) {
-    if (to.path === '/login') {
-      // 如果whiteList已经包含/login，那么即使进入/login，那么也不会执行到这一行
-      // console.log('没有token和user info，但进入的是登录页，直接放行')
-      next()
+  } else {
+    const accessToken = store.state.account.accessToken
+    const user = store.state.account.user
+
+    // 缓存中有token和用户信息才允许进入
+    if (accessToken.length && user) {
+      if (!asyncRouter) {
+        // 当前用户动态菜单路由
+        const userRouter = store.state.account.userRoutes
+        // console.log('从缓存中获取路由表')
+        if (!userRouter) {
+          request.get('/ums/menu/getCurrentUserRouters').then(res => {
+            // console.log('缓存不存在路由表，从后端获取路由表')
+            const permissions = res.data.data.permissions
+            store.commit('account/setPermissions', permissions)
+            asyncRouter = res.data.data.routes
+            // 添加静态测试菜单
+            constTestMenuRouter.forEach(it => {
+              asyncRouter.push(it)
+            })
+            store.commit('account/setRoutes', asyncRouter)
+            // console.log('从后端获取userRouter完毕，设置asyncRouter缓存完毕，放行')
+            go(to, next)
+          })
+        } else {
+          // console.log('缓存中已经存在路由表，放行')
+          asyncRouter = userRouter
+          go(to, next)
+        }
+      } else {
+        // console.log('内存中已经存在路由表，放行')
+        next()
+      }
     } else {
-      // console.log('没有token和user info，强制进入登录页')
-      next('/login')
+      if (to.path === '/login') { // 如果whiteList已经包含/login，那么即使进入/login，那么也不会执行到这一行
+        // console.log('没有token和user info，但进入的是登录页，直接放行')
+        next()
+      } else {
+        // console.log('没有token和user info，强制进入登录页')
+        next('/login')
+      }
     }
-    return
   }
-  if (asyncRouter) {
-    // console.log('内存中已经存在路由表，放行')
-    next()
-    return
-  }
-  // 当前用户动态菜单路由
-  const userRouter = store.state.account.userRoutes
-  console.log('从缓存中获取路由表')
-  if (userRouter) {
-    // console.log('缓存中已经存在路由表，放行')
-    asyncRouter = userRouter
-    go(to, next)
-    return
-  }
-  request.get('/ums/menu/getCurrentUserRouters').then(res => {
-    // console.log('缓存不存在路由表，从后端获取路由表')
-    const permissions = res.data.data.permissions
-    store.commit('account/setPermissions', permissions)
-    asyncRouter = res.data.data.routes
-    // 添加静态测试菜单
-    constTestMenuRouter.forEach(it => {
-      asyncRouter.push(it)
-    })
-    store.commit('account/setRoutes', asyncRouter)
-    // console.log('从后端获取userRouter完毕，设置asyncRouter缓存完毕，放行')
-    go(to, next)
-  })
 })
 
 router.afterEach(() => {

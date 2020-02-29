@@ -1,4 +1,5 @@
 <script>
+/* 自定义菜单项内容 */
 export default {
   name: 'MenuItem',
   functional: true,

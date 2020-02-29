@@ -9,7 +9,8 @@ export default {
     expireTime: db.get('EXPIRE_TIME', 0),
     user: db.get('USER'),
     permissions: db.get('PERMISSIONS'),
-    routes: db.get('USER_ROUTER') || []
+    routes: db.get('USER_ROUTER') || [],
+    userRoutes: db.get('USER_ROUTER', null)
   },
   mutations: {
     setAccessToken(state, val) {

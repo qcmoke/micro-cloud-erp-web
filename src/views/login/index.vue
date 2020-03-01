@@ -178,9 +178,8 @@
 <script>
 import LangSelect from '@/components/LangSelect'
 import db from '@/utils/localstorage'
-import { randomNum } from '@/utils'
-import axios from 'axios'
-import { socialLoginUrl } from '@/settings'
+import { randomNum, getBase64Image } from '@/utils'
+import { socialLoginUrl, loginApi } from '@/settings'
 
 export default {
   name: 'Login',
@@ -188,7 +187,6 @@ export default {
   data() {
     return {
       tabActiveName: 'bindLogin',
-      codeUrl: `${process.env.VUE_APP_BASE_API}auth/resource/captcha`,
       socialLoginUrl: socialLoginUrl,
       login: {
         type: 'up'
@@ -285,24 +283,16 @@ export default {
   },
   methods: {
     getCodeImage() {
-      axios({
-        method: 'GET',
-        url: `${this.codeUrl}?key=${this.randomId}`,
-        responseType: 'arraybuffer'
-      })
+      this.$getImage(`/auth/resource/captcha?key=${this.randomId}`)
         .then(res => {
-          return (
-            'data:image/png;base64,' +
-            btoa(
-              new Uint8Array(res.data).reduce(
-                (data, byte) => data + String.fromCharCode(byte),
-                ''
-              )
-            )
-          )
+          const arrayBuffer = res.data
+          return getBase64Image(arrayBuffer)
         })
         .then(res => {
           this.imageCode = res
+        })
+        .catch(error => {
+          console.error(error)
         })
         .catch(e => {
           if (e.toString().indexOf('429') !== -1) {
@@ -463,7 +453,7 @@ export default {
         this.loading = true
         const that = this
         // 请求获取token
-        this.$login('/auth/oauth/token', {
+        this.$login(loginApi, {
           ...that.loginForm,
           key: this.randomId
         })

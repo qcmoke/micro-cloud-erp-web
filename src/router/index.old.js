@@ -149,6 +149,14 @@ router.beforeEach((to, from, next) => {
             constTestMenuRouter.forEach(it => {
               asyncRouter.push(it)
             })
+            // 在动态路由的最后添加404路由
+            asyncRouter.push({
+              path: '*',
+              name: '404',
+              component: 'error-page/404',
+              hidden: false,
+              alwaysShow: false
+            })
             store.commit('account/setRoutes', asyncRouter)
             // console.log('从后端获取userRouter完毕，设置asyncRouter缓存完毕，放行')
             go(to, next)

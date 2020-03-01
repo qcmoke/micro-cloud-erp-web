@@ -93,10 +93,18 @@ const constTestMenuRouter = [
     hidden: false,
     children: [
       {
-        path: '/test/demo',
-        component: 'test/demo',
-        name: 'demo测试页面',
-        meta: { title: 'demo测试页面', icon: '', breadcrumb: true },
+        path: '/test/tableTest',
+        component: 'test/tableTest',
+        name: 'tableTest测试页面',
+        meta: { title: 'tableTest测试页面', icon: '', breadcrumb: true },
+        hidden: false,
+        alwaysShow: false
+      },
+      {
+        path: '/test/requestTest',
+        component: 'test/requestTest',
+        name: 'requestTest测试页面',
+        meta: { title: 'requestTest测试页面', icon: '', breadcrumb: true },
         hidden: false,
         alwaysShow: false
       }
@@ -167,6 +175,14 @@ router.beforeEach((to, from, next) => {
     // 添加静态测试菜单
     constTestMenuRouter.forEach(it => {
       asyncRouter.push(it)
+    })
+    // 在动态路由的最后添加404路由
+    asyncRouter.push({
+      path: '*',
+      name: '404',
+      component: 'error-page/404',
+      hidden: false,
+      alwaysShow: false
     })
     store.commit('account/setRoutes', asyncRouter)
     // console.log('从后端获取userRouter完毕，设置asyncRouter缓存完毕，放行')

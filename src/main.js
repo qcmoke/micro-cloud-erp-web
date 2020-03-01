@@ -39,6 +39,7 @@ Vue.prototype.$delete = request.delete
 Vue.prototype.$download = request.download
 Vue.prototype.$upload = request.upload
 Vue.prototype.$login = request.login
+Vue.prototype.$getImage = request.getImage
 
 // register global utility filters
 Object.keys(filters).forEach(key => {

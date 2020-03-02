@@ -14,6 +14,7 @@
 </template>
 
 <script>
+import { getloginLogForMeApi } from '@/api/ums'
 export default {
   data() {
     return {
@@ -25,7 +26,7 @@ export default {
   },
   methods: {
     getTimeLine() {
-      this.$get('/ums/log/login/me').then((r) => {
+      getloginLogForMeApi().then((r) => {
         this.timeline = r.data.data
       })
     }

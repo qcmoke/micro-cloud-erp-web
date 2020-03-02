@@ -13,7 +13,7 @@ import router from './router'
 import i18n from './lang' // internationalization
 import './icons' // icon
 import './utils/error-log' // error log
-import request from '@/utils/request'
+import request from '@/api/common'
 
 import * as filters from './filters' // global filters
 import { hasPermission, hasNoPermission, hasAnyPermission } from './utils/permissionDirect'
@@ -35,7 +35,7 @@ Vue.use(Element, {
 Vue.prototype.$post = request.post
 Vue.prototype.$get = request.get
 Vue.prototype.$put = request.put
-Vue.prototype.$delete = request.delete
+Vue.prototype.$delete = request.del
 Vue.prototype.$download = request.download
 Vue.prototype.$upload = request.upload
 Vue.prototype.$login = request.login

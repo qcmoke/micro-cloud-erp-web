@@ -36,6 +36,7 @@
 import { validMobile } from '@/utils/my-validate'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+import { modifyProfileApi, getDeptListApi } from '@/api/ums'
 
 export default {
   components: { Treeselect },
@@ -79,8 +80,12 @@ export default {
         if (valid) {
           this.buttonLoading = true
           const temp = { ...this.user }
-          temp.lastLoginTime = temp.modifyTime = temp.createTime = null
-          this.$put('ums/user/profile', { ...temp }).then((r) => {
+          delete temp.permissions
+          delete temp.authorities
+          delete temp.lastLoginTime
+          delete temp.modifyTime
+          delete temp.createTime
+          modifyProfileApi({ ...temp }).then((r) => {
             if (r.data.status === 200) {
               this.buttonLoading = false
               this.$message({
@@ -105,7 +110,7 @@ export default {
       this.change = true
     },
     initDept() {
-      this.$get('ums/dept').then((r) => {
+      getDeptListApi().then((r) => {
         this.depts = r.data.data.rows
       }).catch((error) => {
         console.error(error)

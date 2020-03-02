@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Layout from '@/layout'
-import request from '@/utils/request'
+import { getCurrentUserRoutersApi } from '@/api/ums'
 import store from '@/store/index'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
@@ -167,7 +167,7 @@ router.beforeEach((to, from, next) => {
     go(to, next)
     return
   }
-  request.get('/ums/menu/getCurrentUserRouters').then(res => {
+  getCurrentUserRoutersApi().then(res => {
     // console.log('缓存不存在路由表，从后端获取路由表')
     const permissions = res.data.data.permissions
     store.commit('account/setPermissions', permissions)

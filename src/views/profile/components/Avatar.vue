@@ -57,6 +57,7 @@ const lm = [
   '20180414165909.jpg', '20180414165914.jpg', '20180414165936.jpg',
   '20180414165942.jpg', '20180414165947.jpg', '20180414165955.jpg'
 ]
+import { modifyAvatarApi } from '@/api/ums'
 export default {
   name: 'Avatar',
   props: {
@@ -106,7 +107,7 @@ export default {
         return
       }
       this.updating = true
-      this.$put('ums/user/avatar', { avatar }).then((r) => {
+      modifyAvatarApi({ avatar }).then((r) => {
         const status = r.data.status
         if (status === 200) {
           this.$emit('success', avatar)

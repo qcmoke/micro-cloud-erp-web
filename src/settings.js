@@ -9,5 +9,5 @@ module.exports = {
   // 社交登录后台地址
   socialLoginUrl: 'http://localhost:9070/auth/resource/social/render',
   // 认证api路径
-  loginApi: '/auth/oauth/token'
+  loginApiUrl: '/auth/oauth/token'
 }

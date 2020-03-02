@@ -1,16 +1,5 @@
-import request from '@/utils/request2'
+import request from '@/utils/request'
 import qs from 'qs'
-
-// eslint-disable-next-line no-unused-vars
-function tansParams(params) {
-  let result = ''
-  Object.keys(params).forEach((key) => {
-    if (!Object.is(params[key], undefined) && !Object.is(params[key], null)) {
-      result += encodeURIComponent(key) + '=' + encodeURIComponent(params[key]) + '&'
-    }
-  })
-  return result
-}
 
 /**
   *  get请求没有Content-Type，使用url地址参数的方式

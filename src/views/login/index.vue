@@ -179,8 +179,17 @@
 import LangSelect from '@/components/LangSelect'
 import db from '@/utils/localstorage'
 import { randomNum, getBase64Image } from '@/utils'
-import { socialLoginUrl, loginApi } from '@/settings'
+import { socialLoginUrl } from '@/settings'
 
+import { loginSuccessCallbackApi } from '@/api/ums'
+import {
+  loginApi,
+  getUserDetailInfoApi,
+  getImageApi,
+  signLoginApi,
+  bindLoginApi,
+  socialLoginApi
+} from '@/api/auth'
 export default {
   name: 'Login',
   components: { LangSelect },
@@ -266,11 +275,7 @@ export default {
       redirect: undefined,
       otherQuery: {},
       randomId: randomNum(24, 16),
-      imageCode: '',
-      page: {
-        width: window.screen.width * 0.5,
-        height: window.screen.height * 0.5
-      }
+      imageCode: ''
     }
   },
   mounted() {
@@ -283,7 +288,7 @@ export default {
   },
   methods: {
     getCodeImage() {
-      this.$getImage(`/auth/resource/captcha?key=${this.randomId}`)
+      getImageApi(this.randomId)
         .then(res => {
           const arrayBuffer = res.data
           return getBase64Image(arrayBuffer)
@@ -315,13 +320,7 @@ export default {
       return require(`@/assets/logo/${logo}`)
     },
     socialLogin(oauthType) {
-      const url = `${this.socialLoginUrl}/${oauthType}/login`
-      window.open(
-        url,
-        'newWindow',
-        `resizable=yes, height=${this.page.height}, width=${this.page.width}, top=10%, left=10%, toolbar=no, menubar=no, scrollbars=no, resizable=no,location=no, status=no`
-      )
-      window.addEventListener('message', this.resolveSocialLogin, false)
+      socialLoginApi(oauthType, this.resolveSocialLogin)
     },
     resolveSocialLogin(e) {
       const data = e.data
@@ -379,9 +378,9 @@ export default {
           bindPassword: that.loginForm.bindPassword,
           ...that.authUser
         }
-        params.token = null
-        that
-          .$post('/auth/resource/social/bind/login', params)
+        // 删除token属性，否则后端注入错误
+        delete params.token
+        bindLoginApi(params)
           .then(r => {
             const data = r.data.data
             this.saveLoginData(data)
@@ -416,8 +415,7 @@ export default {
           ...that.authUser
         }
         params.token = null
-        that
-          .$post('/auth/resource/social/sign/login', params)
+        signLoginApi(params)
           .then(r => {
             const data = r.data.data
             this.saveLoginData(data)
@@ -453,10 +451,7 @@ export default {
         this.loading = true
         const that = this
         // 请求获取token
-        this.$login(loginApi, {
-          ...that.loginForm,
-          key: this.randomId
-        })
+        loginApi({ ...that.loginForm, key: this.randomId })
           .then(r => {
             const data = r.data
             this.saveLoginData(data)
@@ -482,7 +477,7 @@ export default {
       this.$store.commit('account/setExpireTime', expireTime)
     },
     getUserDetailInfo() {
-      this.$get('/auth/resource/user/detail')
+      getUserDetailInfoApi()
         .then(r => {
           const user = r.data.data
           this.$store.commit('account/setUser', user)
@@ -503,7 +498,7 @@ export default {
         })
     },
     loginSuccessCallback() {
-      this.$get('/ums/user/success').catch(e => {
+      loginSuccessCallbackApi().catch(e => {
         console.log(e)
       })
     }

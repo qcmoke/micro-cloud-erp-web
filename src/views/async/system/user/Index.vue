@@ -269,7 +269,7 @@ export default {
       }).then(() => {
         const userIds = []
         this.selection.forEach((u) => {
-          if (u.userId === this.currentUser.userId) {
+          if (u.userId === this.currentUser.uid) {
             contain = true
             return
           }

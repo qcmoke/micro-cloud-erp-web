@@ -1,5 +1,6 @@
 import request from '@/utils/request'
 import qs from 'qs'
+import commonRequest from '@/api/common'
 
 export function getCurrentUserRoutersApi() {
   return request({
@@ -59,4 +60,20 @@ export function getloginLogForMeApi() {
     url: '/ums/log/login/me',
     method: 'get'
   })
+}
+
+export function createUserApi(params) {
+  return commonRequest.post('/ums/user', params)
+}
+
+export function checkIsUsernameExistApi(username) {
+  return commonRequest.get(`/ums/user/check/${username}`)
+}
+
+export function getInitRolesoptionsApi(username) {
+  return commonRequest.get('/ums/role/options')
+}
+
+export function updateUserApi(params) {
+  return commonRequest.post('/ums/user', params)
 }

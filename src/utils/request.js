@@ -45,9 +45,8 @@ service.interceptors.request.use(
         console.log('token距离过期时间还剩 min = ' + getMin(expireTime))
         const refreshToken = getRefreshToken()
         if (left < checkRegion && refreshToken) {
-          console.log(
-            '刷新令牌... token距离过期时间还剩 min: ' + getMin(expireTime)
-          )
+          console.log('当前refreshToken= ' + refreshToken)
+          console.log('刷新令牌 ...')
           _config = queryRefreshToken(_config, refreshToken)
           console.log('完成令牌刷新')
         } else {

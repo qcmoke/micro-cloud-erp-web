@@ -60,9 +60,9 @@
         >
           <el-option
             v-for="item in roles"
-            :key="item.rid"
-            :label="item.rnameZh"
-            :value="String(item.rid)"
+            :key="item.roleId"
+            :label="item.roleNameZh"
+            :value="String(item.roleId)"
           />
         </el-select>
       </el-form-item>
@@ -132,6 +132,7 @@ export default {
   },
   data() {
     return {
+      status: '1',
       user: this.initUser(),
       buttonLoading: false,
       screenWidth: 0,
@@ -273,6 +274,7 @@ export default {
     },
     setUser(val) {
       this.user = { ...val }
+      this.user.status = this.user.status + ''
     },
     close() {
       this.$emit('close')

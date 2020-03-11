@@ -45,6 +45,7 @@ export default {
     },
     role: {
       roleName: 'RoleName',
+      roleNameZh: 'RoleNameZh',
       remark: 'Description',
       createTime: 'CreateTime',
       perms: 'Permissions'
@@ -160,6 +161,7 @@ export default {
     range3to20: '3 to 20 characters in length',
     range4to10: '4 to 10 characters in length',
     range6to20: '6 to 20 characters in length',
+    range3to50: '3 to 50 characters in length',
     email: 'Email is invalid',
     mobile: 'Phone number is invalid',
     usernameExist: 'The username already exists',

@@ -75,5 +75,5 @@ export function getInitRolesoptionsApi(username) {
 }
 
 export function updateUserApi(params) {
-  return commonRequest.post('/ums/user', params)
+  return commonRequest.put('/ums/user', params)
 }

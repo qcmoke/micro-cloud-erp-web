@@ -106,12 +106,12 @@ export default {
       }
     },
     initDeptTree() {
-      this.$get('system/dept').then((r) => {
+      this.$get('/ums/dept').then((r) => {
         this.deptTree = r.data.data.rows
       })
     },
     exportExcel() {
-      this.$download('system/dept/excel', {
+      this.$download('/ums/dept/excel', {
         deptName: this.deptName
       }, `dept_${new Date().getTime()}.xlsx`)
     },
@@ -149,7 +149,7 @@ export default {
           type: 'warning'
         }).then(() => {
           this.dept.deptIds = checked.join(',')
-          this.$delete(`system/dept/${this.dept.deptIds}`).then(() => {
+          this.$delete(`/ums/dept/${this.dept.deptIds}`).then(() => {
             this.$message({
               message: this.$t('tips.deleteSuccess'),
               type: 'success'
@@ -175,7 +175,7 @@ export default {
           this.buttonLoading = true
           this.dept.createTime = this.dept.modifyTime = null
           if (this.dept.deptId) {
-            this.$put('system/dept', { ...this.dept }).then(() => {
+            this.$put('/ums/dept', { ...this.dept }).then(() => {
               this.buttonLoading = false
               this.$message({
                 message: this.$t('tips.updateSuccess'),
@@ -184,7 +184,7 @@ export default {
               this.reset()
             })
           } else {
-            this.$post('system/dept', { ...this.dept }).then(() => {
+            this.$post('/ums/dept', { ...this.dept }).then(() => {
               this.buttonLoading = false
               this.$message({
                 message: this.$t('tips.createSuccess'),

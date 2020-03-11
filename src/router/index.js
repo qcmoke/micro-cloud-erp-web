@@ -107,6 +107,14 @@ const constTestMenuRouter = [
         meta: { title: 'requestTest测试页面', icon: '', breadcrumb: true },
         hidden: false,
         alwaysShow: false
+      },
+      {
+        path: '/test/testRadioGroup',
+        component: 'test/testRadioGroup',
+        name: 'testRadioGroup测试页面',
+        meta: { title: 'testRadioGroup测试页面', icon: '', breadcrumb: true },
+        hidden: false,
+        alwaysShow: false
       }
     ]
   }

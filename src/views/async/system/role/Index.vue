@@ -34,9 +34,14 @@
             @sort-change="sortChange"
           >
             <el-table-column type="selection" align="center" width="40px" />
-            <el-table-column :label="$t('table.role.roleName')" prop="username" :show-overflow-tooltip="true" align="center" min-width="100px">
+            <el-table-column :label="$t('table.role.roleName')" prop="roleName" :show-overflow-tooltip="true" align="center" min-width="100px">
               <template slot-scope="scope">
                 <span>{{ scope.row.roleName }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column :label="$t('table.role.roleNameZh')" prop="roleNameZh" :show-overflow-tooltip="true" align="center" min-width="100px">
+              <template slot-scope="scope">
+                <span>{{ scope.row.roleNameZh }}</span>
               </template>
             </el-table-column>
             <el-table-column :label="$t('table.role.remark')" prop="remark" :show-overflow-tooltip="true" align="center" min-width="200px">
@@ -71,6 +76,9 @@
             <el-form ref="form" :model="role" :rules="rules" label-position="right" label-width="100px">
               <el-form-item :label="$t('table.role.roleName')" prop="roleName">
                 <el-input v-model="role.roleName" :readonly="role.roleId === '' ? false : 'readonly'" />
+              </el-form-item>
+              <el-form-item :label="$t('table.role.roleNameZh')" prop="roleNameZh">
+                <el-input v-model="role.roleNameZh" :readonly="role.roleId === '' ? false : 'readonly'" />
               </el-form-item>
               <el-form-item :label="$t('table.role.remark')" prop="remark">
                 <el-input v-model="role.remark" type="textarea" rows="3" />
@@ -125,10 +133,10 @@ export default {
       rules: {
         roleName: [
           { required: true, message: this.$t('rules.require'), trigger: 'blur' },
-          { min: 3, max: 10, message: this.$t('rules.range3to10'), trigger: 'blur' },
+          { min: 3, max: 50, message: this.$t('rules.range3to50'), trigger: 'blur' },
           { validator: (rule, value, callback) => {
             if (!this.role.roleId) {
-              this.$get(`system/role/check/${value}`).then((r) => {
+              this.$get(`/ums/role/check/${value}`).then((r) => {
                 if (!r.data) {
                   callback(this.$t('rules.roleNameExist'))
                 } else {
@@ -139,6 +147,10 @@ export default {
               callback()
             }
           }, trigger: 'blur' }
+        ],
+        roleNameZh: [
+          { required: true, message: this.$t('rules.require'), trigger: 'blur' },
+          { min: 3, max: 50, message: this.$t('rules.range3to50'), trigger: 'blur' }
         ],
         remark: { max: 50, message: this.$t('rules.noMoreThan50'), trigger: 'blur' }
       }
@@ -153,11 +165,12 @@ export default {
       return {
         roleId: '',
         roleName: '',
+        roleNameZh: '',
         remark: ''
       }
     },
     initMenuTree() {
-      this.$get('system/menu').then((r) => {
+      this.$get('/ums/menu').then((r) => {
         this.permsTree = r.data.data.rows
       })
     },
@@ -168,7 +181,7 @@ export default {
       this.$refs.table.clearSelection()
     },
     exportExcel() {
-      this.$download('system/role/excel', {
+      this.$download('/ums/role/excel', {
         pageSize: this.pagination.size,
         pageNum: this.pagination.num,
         ...this.queryParams
@@ -211,7 +224,7 @@ export default {
     },
     delete(roleIds) {
       this.loading = true
-      this.$delete(`system/role/${roleIds}`).then(() => {
+      this.$delete(`/ums/role/${roleIds}`).then(() => {
         this.$message({
           message: this.$t('tips.deleteSuccess'),
           type: 'success'
@@ -226,7 +239,7 @@ export default {
           if (this.role.roleId) {
             this.role.menuIds = this.$refs.permsTree.getCheckedKeys().join(',')
             this.role.createTime = this.role.modifyTime = null
-            this.$put('system/role', { ...this.role }).then(() => {
+            this.$put('/ums/role', { ...this.role }).then(() => {
               this.buttonLoading = false
               this.$message({
                 message: this.$t('tips.updateSuccess'),
@@ -236,7 +249,7 @@ export default {
             })
           } else {
             this.role.menuIds = this.$refs.permsTree.getCheckedKeys().join(',')
-            this.$post('system/role', { ...this.role }).then(() => {
+            this.$post('/ums/role', { ...this.role }).then(() => {
               this.buttonLoading = false
               this.$message({
                 message: this.$t('tips.createSuccess'),
@@ -282,7 +295,7 @@ export default {
       this.loading = true
       params.pageSize = this.pagination.size
       params.pageNum = this.pagination.num
-      this.$get('system/role', { ...params }).then((r) => {
+      this.$get('/ums/role', { ...params }).then((r) => {
         const data = r.data.data
         this.list = data.rows
         this.total = data.total

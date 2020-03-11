@@ -45,6 +45,7 @@ export default {
     },
     role: {
       roleName: '角色名称',
+      roleNameZh: '中文名称',
       remark: '角色描述',
       createTime: '创建时间',
       perms: '角色权限'
@@ -160,6 +161,7 @@ export default {
     range3to20: '长度在 3 到 20 个字符',
     range4to10: '长度在 4 到 10 个字符',
     range6to20: '长度在 6 到 20 个字符',
+    range3to50: '长度在 3 到 50 个字符',
     email: '请输入正确的邮箱地址',
     mobile: '请输入合法的手机号',
     usernameExist: '该用户名已存在',
@@ -248,6 +250,7 @@ export default {
     signLogin: '注册并登录',
     current: '当前',
     socialAccount: '账号',
-    socialTips: '尚未绑定任何系统账户，您可以绑定系统账户或者注册一个新的账户并绑定。'
+    socialTips:
+      '尚未绑定任何系统账户，您可以绑定系统账户或者注册一个新的账户并绑定。'
   }
 }

@@ -5,12 +5,12 @@ import store from '@/store/index'
 import router from '@/router'
 import { getToken, getRefreshToken, getExpireTime } from '@/utils/auth'
 import { tansParams } from '@/utils/request-util'
-import { getMin, getMillisecond } from '@/utils/date-util'
+import { getMillisecond } from '@/utils/date-util'
 
 // 请求超时时间，10s
 const requestTimeOut = 10 * 1000
 const success = 200
-// 更换令牌的时间区间，剩余300000毫秒->300秒->5分钟的时候刷新令牌
+// 更换令牌的时间区间，剩余300000毫秒->300秒->少于5分钟的时候刷新令牌
 const checkRegion = 5 * 60 * 1000
 // 提示信息显示时长
 const messageDuration = 5 * 1000
@@ -42,13 +42,11 @@ service.interceptors.request.use(
       const expireTime = getExpireTime()
       if (expireTime) {
         const left = getMillisecond(expireTime)
-        console.log('token距离过期时间还剩 min = ' + getMin(expireTime))
         const refreshToken = getRefreshToken()
+        // console.log('token距离过期时间还剩 min = ' + getLeftMin(expireTime) + '; 当前 refreshToken = ' + refreshToken)
         if (left < checkRegion && refreshToken) {
-          console.log('当前refreshToken= ' + refreshToken)
-          console.log('刷新令牌 ...')
+          // 刷新使用refreshToken刷新AccessToken，并设置AccessToken到header中
           _config = queryRefreshToken(_config, refreshToken)
-          console.log('完成令牌刷新')
         } else {
           const accessToken = getToken()
           if (accessToken) {
@@ -129,6 +127,7 @@ service.interceptors.response.use(
 )
 
 async function queryRefreshToken(config, refreshToken) {
+  console.log('刷新令牌 ...')
   const result = await service.post(
     loginApiUrl,
     {
@@ -156,6 +155,9 @@ async function queryRefreshToken(config, refreshToken) {
     )
     store.commit('account/setExpireTime', expireTime)
     config.headers['Authorization'] = 'bearer ' + getToken()
+    console.log('令牌刷新成功！')
+  } else {
+    console.error('令牌刷新失败！')
   }
   return config
 }

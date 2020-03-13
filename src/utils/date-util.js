@@ -18,6 +18,6 @@ export function getSecond(timeDate) {
  * 剩余分
  * @param {Number} timeDate 时间戳
  */
-export function getMin(timeDate) {
+export function getLeftMin(timeDate) {
   return parseInt((timeDate - new Date().getTime()) / (1000 * 60))
 }

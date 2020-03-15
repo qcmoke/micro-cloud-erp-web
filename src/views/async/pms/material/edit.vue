@@ -46,7 +46,7 @@
   </el-dialog>
 </template>
 <script>
-import { addApi, updateApi } from '@/api/pms'
+import { addeMaterialApi, updateMaterialApi } from '@/api/pms'
 export default {
   name: 'MaterialEdit',
   props: {
@@ -129,7 +129,7 @@ export default {
         const params = this.material
         if (!params.materialId) {
           // 不存在id说明新增
-          addApi(params).then(r => {
+          addeMaterialApi(params).then(r => {
             console.log(r.data.status)
             this.$message({
               message: this.$t('tips.createSuccess'),
@@ -138,7 +138,7 @@ export default {
             this.$emit('success')
           })
         } else {
-          updateApi(params).then(r => {
+          updateMaterialApi(params).then(r => {
             this.$message({
               message: this.$t('tips.updateSuccess'),
               type: 'success'

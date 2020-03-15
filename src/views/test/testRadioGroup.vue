@@ -1,18 +1,19 @@
 <template>
-  <el-radio-group v-model="user.radio">
-    <el-radio :label="3">备选项</el-radio>
-    <el-radio :label="6">备选项</el-radio>
-    <el-radio :label="9">备选项</el-radio>
-  </el-radio-group>
+  <div>
+    <el-input-number v-model="num1" />
+    <el-input-number v-model="num2" size="medium" />
+    <el-input-number v-model="num3" size="small" />
+    <el-input-number v-model="num4" size="mini" />
+  </div>
 </template>
-
 <script>
 export default {
   data() {
     return {
-      user: {
-        radio: 9
-      }
+      num1: 1,
+      num2: 1,
+      num3: 1,
+      num4: 1
     }
   }
 }

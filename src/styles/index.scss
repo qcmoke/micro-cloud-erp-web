@@ -10,25 +10,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  font-family: Chinese Quote,-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Helvetica Neue,Helvetica,Arial,sans-serif;
-}
-
-::-webkit-scrollbar {
-  width: .5rem;
-  height: .5rem;
-}
-
-::-webkit-scrollbar-track {
-  border-radius: 1px;
-}
-
-::-webkit-scrollbar-thumb {
-  border-radius: 1px;
-  background: rgba(0, 0, 0, .2);
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;
 }
 
 label {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 html {
@@ -136,8 +122,6 @@ aside {
 //main-container全局样式
 .app-container {
   padding: 20px;
-  margin: 10px;
-  background: #fff;
 }
 
 .components-container {
@@ -195,20 +179,6 @@ aside {
     vertical-align: middle;
     margin-bottom: 10px;
   }
-  .search-item {
-    margin-right: 10px;
-    width: 190px;
-  }
-  .date-range-item {
-    width: 240px;
-  }
-}
-
-.table-operation {
-  margin-right: 10px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
 }
 
 //refine vue-multiselect plugin
@@ -220,67 +190,4 @@ aside {
   z-index: 1000 !important;
 }
 
-.el-button:not(.is-circle,.is-round), .el-input__inner {
-  border-radius: 3px !important;
-}
-.el-input {
-  font-size: .85rem !important;
-
-}
-.el-button {
-  margin-left: 0 !important;
-  margin-right: 10px;
-}
-.el-submenu__title {
-  i {
-    color: rgba(255, 255, 255, 0.7);
-    margin-right: 10px !important;
-    margin-left: 10px;
-  }
-}
-
-.el-tooltip__popper {
-  max-width: 500px !important;
-  font-size: .88rem;
-}
-.no-perm {
-  margin-top: -6px
-}
-.el-input__inner {
-  height: 38px;
-  line-height: 38px;
-}
-.el-button {
-  padding: 10px 20px;
-}
-.el-table th {
-  padding: 9px 0;
-}
-.el-input-number {
-  line-height: 36px;
-}
-.menu-wrapper.nest-menu .el-submenu__title {
-  padding-left: 63px !important;
-}
-.vue-treeselect__placeholder, .vue-treeselect__single-value {
-  line-height: 40px !important;
-  height: 40px !important;
-  padding-left: 10px !important;
-}
-.vue-treeselect__single-value {
-  color: #606266 !important;
-}
-
-
-
-//解决table表格中浏览器按百分比缩放，表头与内容边框错位的bug
-//https://github.com/PanJiaChen/vue-element-admin/issues/2962
-.app-container {
-  padding: 20px;
-}
-body .el-table th.gutter{
-  display: table-cell!important;
-}
-body .el-table colgroup.gutter{
-  display: table-cell!important;
-}
+@import './custom.scss'

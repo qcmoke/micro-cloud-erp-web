@@ -34,7 +34,6 @@
       :key="tableKey"
       v-loading="loading"
       :data="pageResult.rows"
-      border
       fit
       style="width: 100%;"
       @selection-change="onSelectChange"
@@ -96,7 +95,7 @@
 </template>
 
 <script>
-import { pageApi, deleteApi } from '@/api/pms'
+import { pageMaterialApi, batchDeleteMaterialApi } from '@/api/pms'
 import Pagination from '@/components/Pagination'
 import MaterialEdit from './edit'
 
@@ -132,7 +131,7 @@ export default {
     fetch: function() {
       this.loading = true
       const params = this.query
-      pageApi(params).then(r => {
+      pageMaterialApi(params).then(r => {
         this.pageResult = r.data.data
       })
       this.loading = false
@@ -176,7 +175,7 @@ export default {
       }).then(() => {
         const materialIds = this.selection.map(row => row.materialId).join()
         this.loading = true
-        deleteApi(materialIds)
+        batchDeleteMaterialApi(materialIds)
           .then(r => {
             this.$message({
               message: this.$t('tips.deleteSuccess'),

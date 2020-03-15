@@ -1,0 +1,70 @@
+//菜单
+.el-button:not(.is-circle, .is-round),
+.el-input__inner {
+  border-radius: 3px !important;
+}
+.el-submenu__title {
+  i {
+    color: rgba(255, 255, 255, 0.7);
+    margin-right: 10px !important;
+    margin-left: 10px;
+  }
+}
+
+/**
+ * @author qcmoke
+ *(只适用于webkit内核浏览器)
+ */
+@media (min-width: 567px) {
+  /* 定义滚动条高宽及背景高宽分别对应横竖滚动条的尺寸 */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    background-color: #f5f5f5;
+  }
+
+  /* 定义滚动条轨道内阴影+圆角 */
+  ::-webkit-scrollbar-track {
+    border-radius: 2px;
+    background-color: #f5f5f5;
+  }
+
+  /* 定义滑块内阴影+圆角 */
+  ::-webkit-scrollbar-thumb {
+    border-radius: 2px;
+    background-color: #555;
+  }
+}
+
+//main-container全局样式
+.app-container {
+  padding: 20px;
+  margin: 10px;
+  background: #fff;
+  //表格操作列
+  .table-operation {
+    margin-right: 10px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .filter-container {
+    //搜索框
+    .search-item {
+      margin-right: 10px;
+      width: 190px;
+    }
+  }
+}
+
+//解决table表格中浏览器按百分比缩放，表头与内容边框错位的bug
+//https://github.com/PanJiaChen/vue-element-admin/issues/2962
+.app-container {
+  padding: 20px;
+}
+body .el-table th.gutter {
+  display: table-cell !important;
+}
+body .el-table colgroup.gutter {
+  display: table-cell !important;
+}

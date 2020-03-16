@@ -253,7 +253,7 @@ export default {
       return row.payType
     },
     tableRowClassName: function({ row, rowIndex }) {
-      if (row.status === 3) {
+      if (row.status === 4) {
         return 'success-row'
       } else {
         return 'warning-row'

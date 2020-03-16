@@ -391,7 +391,7 @@ export default {
       updatePurchaseOrderMasterApi({ masterId: masterId, status: 1 })
         .then(r => {
           this.$message({
-            message: '入库成功',
+            message: '申请成功',
             type: 'success'
           })
           this.loading = false

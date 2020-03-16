@@ -49,7 +49,7 @@
       </el-form-item>
     </el-form>
 
-    <el-table :data="commodities" style="width: 100%" border>
+    <el-table :data="tableDetails" style="width: 100%" border>
       <el-table-column label="ID" prop="materialId" align="center" />
       <el-table-column label="物料名称" prop="materialName" align="center" />
       <el-table-column label="图片" prop="img" align="center">
@@ -74,11 +74,6 @@
             v-model="scope.row.count"
             :min="0"
             size="mini"
-            @change="
-              (n, o) => {
-                handleAmountTotal(n, o, scope.row.price, scope.row.count);
-              }
-            "
           />
         </template>
       </el-table-column>
@@ -216,7 +211,7 @@ export default {
       options: [],
       allMaterials: [],
       allSuppliers: [],
-      commodities: [],
+      tableDetails: [],
       amounTotal: 0,
       amounCount: 0,
       postForm: this.initPostForm(),
@@ -241,7 +236,8 @@ export default {
     }
   },
   watch: {
-    commodities: {
+    // 监控订单明细，并计算出其总金额
+    tableDetails: {
       handler(n, o) {
         this.amounTotal = 0
         this.amounCount = 0
@@ -255,36 +251,21 @@ export default {
       },
       deep: true
     },
-    'postForm.supplierId': function(n, o) {
-
-    },
     dto: {
-      handler(n, o) {
-        const dtoInfo = { ...n }
-        this.postForm.masterId = dtoInfo.masterId
-        const supplier = dtoInfo.supplier
-        if (supplier) {
-          this.postForm.supplierId = supplier.supplierId
-        }
+      handler(dtoInfo, o) {
+        // Object.assign(target,…sources) 有相同的key时，在target对象中的值会被后面source对象的值覆盖
+        Object.assign(this.postForm, { ...dtoInfo })
         this.postForm.orderIsPaid = dtoInfo.payStatus === 2
         this.postForm.freightIsPaid = dtoInfo.freightPayStatus === 2
-        this.postForm.payType = dtoInfo.payType
-        this.postForm.freight = dtoInfo.freight
-        this.postForm.remark = dtoInfo.remark
         const purchaseOrderDetailVoSet = dtoInfo.purchaseOrderDetailVoSet
         if (purchaseOrderDetailVoSet) {
-          this.commodities = purchaseOrderDetailVoSet.map(detailVo => {
-            this.allMaterials.forEach(el => {
-            // 让物料下拉列表的相关属性不可选
-              if (el.materialId === detailVo.materialId) {
-                el.disabled = true
-              }
-            })
-            // 将订单明细返回给commodities，从而渲染到列表中
+          this.tableDetails = purchaseOrderDetailVoSet.map(detailVo => {
+            // 让列表物料与明细物料相同id的，让其不可选
+            this.setMaterialBeDisable(true, detailVo.materialId)
+            // 将订单明细返回给tableDetails，从而渲染到表格中
             return {
               ...detailVo.material,
               count: detailVo.count,
-              disabled: true,
               detailId: detailVo.detailId
             }
           })
@@ -306,6 +287,8 @@ export default {
     initAllSuppliers: function() {
       getAllSuppliersApi().then(r => {
         this.allSuppliers = r.data.data
+      }).catch(e => {
+        console.error('获取供应商列表失败', e)
       })
     },
     close: function() {
@@ -325,6 +308,8 @@ export default {
             price: item.price
           }
         })
+      }).catch(e => {
+        console.error('获取物料列表失败')
       })
     },
     submitForm: function() {
@@ -336,21 +321,21 @@ export default {
           if (!v2) {
             return
           }
-          const len = this.commodities.length
+          const len = this.tableDetails.length
           if (len <= 0) {
-            this.$message.error('请添加商品')
+            this.$message.error('请添加物料')
             return
           }
           for (let i = 0; i < len; i++) {
-            if (this.commodities[i].count <= 0) {
-              this.$message.error('商品数量不能为 0')
+            if (this.tableDetails[i].count <= 0) {
+              this.$message.error('物料数量不能为 0')
               this.postForm.purchaseOrderDetailList = []
               return
             }
             this.postForm.purchaseOrderDetailList.push({
-              detailId: this.commodities[i].detailId,
-              materialId: this.commodities[i].materialId,
-              count: this.commodities[i].count
+              detailId: this.tableDetails[i].detailId,
+              materialId: this.tableDetails[i].materialId,
+              count: this.tableDetails[i].count
             })
           }
           this.loading = true
@@ -372,21 +357,34 @@ export default {
     },
     selectChange() {
       if (this.selectValue !== '') {
+        // 让选中的物料不可再选
         this.selectValue.disabled = true
-        this.commodities.push(this.selectValue)
+        // 渲染到列表中
+        this.tableDetails.push(this.selectValue)
         this.selectValue = ''
       }
     },
     handleDelete(index, row) {
-      this.commodities.splice(index, 1)
-      row.disabled = false
+      // 让删除掉表格中的明细，并让其对应的物料重新可选
+      this.tableDetails.splice(index, 1)
+      this.setMaterialBeDisable(false, row.materialId)
     },
-    handleAmountTotal: function(n, o, price, count) {},
-    resetForm() {
-      for (let i = 0; i < this.commodities.length; i++) {
-        this.commodities[i].disabled = false
+    // 让明细中物料id对应的物料选择列表重新可选。如果不传id，那么全部重新可选
+    setMaterialBeDisable: function(flag, id) {
+      if (id) {
+        this.allMaterials.forEach(elm => {
+          if (id === elm.materialId) { elm.disabled = flag }
+        })
+      } else {
+        this.allMaterials.forEach(elm => {
+          elm.disabled = flag
+        })
       }
-      this.commodities = []
+    },
+    resetForm: function() {
+      // 让物料列表所有物料重新可选
+      this.setMaterialBeDisable(false)
+      this.tableDetails = []
       this.amounTotal = 0
       this.amounCount = 0
       this.postForm = this.initPostForm()

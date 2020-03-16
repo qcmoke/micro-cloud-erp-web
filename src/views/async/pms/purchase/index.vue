@@ -285,9 +285,9 @@ export default {
       this.dialog.isVisible = true
     },
     edit: function(row) {
-      if (row.status === 4) {
+      if (row.status >= 3) {
         this.$message({
-          message: '包含已入库的订单，不允许修改',
+          message: '包含已审核通过的订单，不允许修改',
           type: 'warning'
         })
         return
@@ -304,13 +304,13 @@ export default {
     batchDelete: function() {
       var canDelete = true
       this.selection.forEach(elm => {
-        if (elm.status === 4) {
+        if (elm.status >= 3) {
           canDelete = false
         }
       })
       if (!canDelete) {
         this.$message({
-          message: '包含已入库的订单，不允许删除',
+          message: '包含已审核通过的订单，不允许删除',
           type: 'warning'
         })
         return
@@ -327,9 +327,9 @@ export default {
         cancelButtonText: this.$t('common.cancel'),
         type: 'warning'
       }).then(() => {
-        const materialIds = this.selection.map(row => row.materialId).join()
+        const masterIds = this.selection.map(row => row.masterId).join()
         this.loading = true
-        batchDeletePurchaseOrderMasterApi(materialIds)
+        batchDeletePurchaseOrderMasterApi(masterIds)
           .then(r => {
             this.$message({
               message: this.$t('tips.deleteSuccess'),
@@ -349,6 +349,7 @@ export default {
     exportExcel: function() {},
     onSelectChange: function(selection) {
       this.selection = selection
+      console.log(this.selection)
     },
     formatterStatus: function(row, column) {
       switch (row.status) {

@@ -55,6 +55,8 @@ export function createOrUpdatePurchaseOrderApi(params) {
 }
 
 export function batchDeletePurchaseOrderMasterApi(ids) {
+  console.log(ids)
+
   return request({
     url: `/pms/purchaseOrderMaster/${ids}`,
     method: 'delete'

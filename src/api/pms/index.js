@@ -7,6 +7,10 @@ export function pageMaterialApi(params) {
   })
 }
 
+export function getAllMaterialsApi() {
+  return request.get('/pms/material/getAll')
+}
+
 export function addeMaterialApi(params) {
   return request({
     url: '/pms/material',
@@ -30,10 +34,6 @@ export function updateMaterialApi(params) {
   })
 }
 
-/**
- *
- * @param {*} params
- */
 export function pagePurchaseOrderMasterApi(params) {
   return request.get('/pms/purchaseOrderMaster', {
     params: params
@@ -46,11 +46,11 @@ export function pagePurchaseOrderMasterForAddStockApi(params) {
   })
 }
 
-export function addePurchaseOrderMasterApi(params) {
+export function createOrUpdatePurchaseOrderApi(params) {
   return request({
-    url: '/pms/purchaseOrderMaster',
+    url: '/pms/purchaseOrderMaster/createOrUpdatePurchaseOrder',
     method: 'post',
-    data: qs.stringify(params)
+    data: params
   })
 }
 
@@ -76,9 +76,9 @@ export function addMaterialToStockApi(masterId) {
   })
 }
 
-/**
- *
- */
-export function getAllSuppliers() {
-  return request.get('/pms/supplier/list')
+export function getAllSuppliersApi() {
+  return request({
+    url: '/pms/supplier/list',
+    method: 'get'
+  })
 }

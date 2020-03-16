@@ -24,6 +24,45 @@
       :row-class-name="tableRowClassName"
       @selection-change="onSelectChange"
     >
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-table
+            :data="props.row.purchaseOrderDetailVoSet"
+            style="width: 100%"
+            class="inner-table-detail"
+            border
+          >
+            <el-table-column
+              label="订单明细信息"
+              align="center"
+              :render-header="(h, cos) => renderHeader(h, cos, props.row)"
+            >
+              <el-table-column
+                label="订单明细ID"
+                prop="detailId"
+                align="center"
+              />
+              <el-table-column
+                label="物料名称"
+                prop="materialName"
+                align="center"
+              />
+              <el-table-column label="采购数量" prop="count" align="center" />
+              <el-table-column label="备注" prop="remark" align="center" />
+              <el-table-column
+                label="创建时间"
+                prop="createTime"
+                align="center"
+              />
+              <el-table-column
+                label="修改时间"
+                prop="modifyTime"
+                align="center"
+              />
+            </el-table-column>
+          </el-table>
+        </template>
+      </el-table-column>
       <el-table-column type="selection" align="center" width="40px" />
       <el-table-column prop="masterId" label="订单编号" min-width="60px" />
       <el-table-column prop="supplier" label="供应商" min-width="60px">
@@ -31,7 +70,30 @@
           <div>{{ scope.row.supplier.supplierName }}</div>
         </template>
       </el-table-column>
-      <el-table-column prop="totalAmount" label="总金额" min-width="60px" />
+      <el-table-column
+        prop="totalAmount"
+        label="总金额"
+        min-width="60px"
+        align="center"
+      />
+      <el-table-column
+        prop="freight"
+        align="center"
+        label="运费"
+        min-width="80px"
+      />
+      <el-table-column
+        prop="operator"
+        align="center"
+        label="操作员"
+        min-width="80px"
+      />
+      <el-table-column
+        prop="payStatus"
+        align="center"
+        label="支付状态"
+        min-width="80px"
+      />
       <el-table-column
         prop="payType"
         label="支付类型"
@@ -125,13 +187,27 @@ export default {
     this.fetch()
   },
   methods: {
+    // render 事件
+    renderHeader(h, cos, row) {
+      // h即为cerateElement的简写，具体可看vue官方文档
+      return h('div', [
+        h('span', cos.column.label),
+        h('i', {
+          class: 'el-icon-house',
+          style: 'margin-left:5px;margin-right:5px;'
+        }),
+        h('span', '采购件数：' + row.purchaseOrderDetailVoSet.length)
+      ])
+    },
     fetch: function() {
       this.loading = true
       const params = this.query
       pagePurchaseOrderMasterForAddStockApi(params).then(r => {
         this.pageResult = r.data.data
+        this.loading = false
+      }).catch(e => {
+        this.loading = false
       })
-      this.loading = false
     },
     search: function() {
       this.fetch()
@@ -188,41 +264,42 @@ export default {
      */
     checkFail: async function(masterId) {
       this.loading = true
-      await updatePurchaseOrderMasterApi({ masterId: masterId, status: 2 }).then(
-        r => {
-          this.$message({
-            message: '操作成功',
-            type: 'success'
-          })
-        }
-      )
+      await updatePurchaseOrderMasterApi({
+        masterId: masterId,
+        status: 2
+      }).then(r => {
+        this.$message({
+          message: '操作成功',
+          type: 'success'
+        })
+      })
       this.loading = false
       this.$refs.table.clearSelection()
       this.search()
     },
     checkPass: async function(masterId) {
       this.loading = true
-      await updatePurchaseOrderMasterApi({ masterId: masterId, status: 3 }).then(
-        r => {
-          this.$message({
-            message: '操作成功',
-            type: 'success'
-          })
-        }
-      )
+      await updatePurchaseOrderMasterApi({
+        masterId: masterId,
+        status: 3
+      }).then(r => {
+        this.$message({
+          message: '操作成功',
+          type: 'success'
+        })
+      })
       this.loading = false
       this.$refs.table.clearSelection()
       this.search()
     },
     addToStock: async function(masterId) {
       this.loading = true
-      await addMaterialToStockApi(masterId)
-        .then(r => {
-          this.$message({
-            message: '操作成功',
-            type: 'success'
-          })
+      await addMaterialToStockApi(masterId).then(r => {
+        this.$message({
+          message: '操作成功',
+          type: 'success'
         })
+      })
       this.loading = false
       this.$refs.table.clearSelection()
       this.search()

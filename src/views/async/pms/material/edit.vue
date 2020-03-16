@@ -24,6 +24,15 @@
       <el-form-item label="单位" prop="unit">
         <el-input v-model="material.unit" />
       </el-form-item>
+      <el-form-item label="规格" prop="standard">
+        <el-input v-model="material.standard" />
+      </el-form-item>
+      <el-form-item label="单价" prop="price">
+        <el-input v-model="material.price" />
+      </el-form-item>
+      <el-form-item label="安全库存量" prop="safetyStock">
+        <el-input v-model="material.safetyStock" />
+      </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button
@@ -65,6 +74,9 @@ export default {
         materialName: null,
         img: null,
         unit: null,
+        standard: null,
+        price: null,
+        safetyStock: null,
         createTime: null,
         modifyTime: null,
         deleteStatus: null
@@ -88,6 +100,21 @@ export default {
           trigger: 'blur'
         },
         unit: {
+          required: true,
+          message: this.$t('rules.require'),
+          trigger: 'blur'
+        },
+        standard: {
+          required: true,
+          message: this.$t('rules.require'),
+          trigger: 'blur'
+        },
+        price: {
+          required: true,
+          message: this.$t('rules.require'),
+          trigger: 'blur'
+        },
+        safetyStock: {
           required: true,
           message: this.$t('rules.require'),
           trigger: 'blur'
@@ -125,7 +152,6 @@ export default {
           return false
         }
         this.buttonLoading = true
-        console.log(this.material)
         const params = this.material
         if (!params.materialId) {
           // 不存在id说明新增
@@ -135,7 +161,10 @@ export default {
               message: this.$t('tips.createSuccess'),
               type: 'success'
             })
+            this.buttonLoading = false
             this.$emit('success')
+          }).catch(e => {
+            this.buttonLoading = false
           })
         } else {
           updateMaterialApi(params).then(r => {
@@ -143,7 +172,10 @@ export default {
               message: this.$t('tips.updateSuccess'),
               type: 'success'
             })
+            this.buttonLoading = false
             this.$emit('success')
+          }).catch(e => {
+            this.buttonLoading = false
           })
         }
         this.reset()

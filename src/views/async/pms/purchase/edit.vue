@@ -7,63 +7,156 @@
     :close-on-press-escape="false"
     :visible.sync="isVisible"
   >
+    <el-form
+      ref="postForm2"
+      :model="postForm"
+      :rules="rules"
+      size="mini"
+      label-position="right"
+      status-icon
+    >
+      <el-form-item label="选择供应商" label-width="100px" prop="supplierId">
+        <el-select
+          v-model="postForm.supplierId"
+          placeholder="请选择"
+          size="mini"
+        >
+          <el-option
+            v-for="item in allSuppliers"
+            :key="item.supplierId"
+            :label="item.supplierName"
+            :value="item.supplierId"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="添加采购物料" label-width="100px">
+        <el-select
+          v-model="selectValue"
+          filterable
+          clearable
+          placeholder="请选择物料"
+          size="mini"
+          @change="selectChange"
+        >
+          <el-option
+            v-for="item in allMaterials"
+            :key="item.materialId"
+            :label="item.materialName"
+            :value="item"
+            :disabled="item.disabled"
+          />
+        </el-select>
+      </el-form-item>
+    </el-form>
+
+    <el-table :data="commodities" style="width: 100%" border>
+      <el-table-column label="ID" prop="materialId" align="center" />
+      <el-table-column label="物料名称" prop="materialName" align="center" />
+      <el-table-column label="图片" prop="img" align="center">
+        <template
+          v-if="scope.row.img && scope.row.img != ''"
+          slot-scope="scope"
+        >
+          <el-image
+            style="width: 50px;"
+            :src="scope.row.img"
+            :alt="scope.row.materialName"
+            :preview-src-list="[scope.row.img]"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column label="单位" prop="unit" align="center" />
+      <el-table-column label="规格" prop="standard" align="center" />
+      <el-table-column label="采购单价" prop="price" align="center" />
+      <el-table-column label="数量" width="160" align="center">
+        <template slot-scope="scope">
+          <el-input-number
+            v-model="scope.row.count"
+            :min="0"
+            size="mini"
+            @change="
+              (n, o) => {
+                handleAmountTotal(n, o, scope.row.price, scope.row.count);
+              }
+            "
+          />
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center">
+        <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="danger"
+            icon="el-icon-delete"
+            circle
+            @click="handleDelete(scope.$index, scope.row)"
+          />
+        </template>
+      </el-table-column>
+    </el-table>
     <div>
-
-      <el-form
-        ref="postForm"
-        :model="postForm"
-        :rules="rules"
-        size="mini"
-        status-icon
-      >
-        <el-form-item label="订单总额" prop="Amount">
-          <el-input v-model.number="postForm.Amount" type="number" />
-        </el-form-item>
-        <el-form-item label="备注" prop="Remarks">
-          <el-input v-model="postForm.Remarks" />
-        </el-form-item>
-      </el-form>
-
-      <el-select
-        v-model="selectValue"
-        filterable
-        clearable
-        placeholder="请选择"
-        size="mini"
-        @change="selectChange"
-      >
-        <el-option
-          v-for="item in options"
-          :key="item.ID"
-          :label="item.Name"
-          :value="item"
-          :disabled="item.Disabled"
-        />
-      </el-select>
-      <el-table :data="commodities" style="width: 100%">
-        <el-table-column label="ID" prop="ID" />
-        <el-table-column label="名称" prop="Name" />
-        <el-table-column label="颜色" prop="Colour" />
-        <el-table-column label="尺寸" prop="Size" />
-        <el-table-column label="品牌" prop="Brand" />
-        <el-table-column label="数量" width="150">
-          <template slot-scope="scope">
-            <el-input-number v-model="scope.row.Quantity" :min="0" size="mini" />
-          </template>
-        </el-table-column>
-        <el-table-column label="操作">
-          <template slot-scope="scope">
-            <el-button
+      <el-row type="flex" class="row-bg" justify="end">
+        <el-col :span="14">
+          <el-card shadow="always">
+            <span>采购件数： {{ amounCount }}</span>
+            <span>总金额： {{ amounTotal }}</span>
+            <el-form
+              ref="postForm"
+              :model="postForm"
+              :rules="rules"
+              label-position="left"
               size="mini"
-              type="danger"
-              icon="el-icon-delete"
-              circle
-              @click="handleDelete(scope.$index, scope.row)"
-            />
-          </template>
-        </el-table-column>
-      </el-table>
-
+              status-icon
+            >
+              <el-form-item label="订单支付状态">
+                <el-switch
+                  v-model="postForm.orderIsPaid"
+                  active-color="#13ce66"
+                  inactive-color="#ff4949"
+                />
+              </el-form-item>
+              <el-form-item label="运费支付状态">
+                <el-switch
+                  v-model="postForm.freightIsPaid"
+                  active-color="#13ce66"
+                  inactive-color="#ff4949"
+                />
+              </el-form-item>
+              <el-form-item label="订单支付类型" label-width="100px">
+                <el-select
+                  v-model="postForm.payType"
+                  placeholder="请选择"
+                  size="mini"
+                  :disabled="!postForm.orderIsPaid"
+                >
+                  <el-option
+                    v-for="item in [
+                      { key: 1, name: '支付宝' },
+                      { key: 2, name: '微信' },
+                      { key: 3, name: '银联' },
+                      { key: 4, name: '货到付款' }
+                    ]"
+                    :key="item.key"
+                    :label="item.name"
+                    :value="item.key"
+                  />
+                </el-select>
+              </el-form-item>
+              <el-form-item label="运费" label-width="100px">
+                <el-input
+                  v-model="postForm.freight"
+                  size="mini"
+                  style="width: 185px;"
+                  :disabled="!postForm.freightIsPaid"
+                />
+              </el-form-item>
+              <el-form-item label="备注" prop="remark" label-width="100px">
+                <el-input v-model="postForm.remark" />
+              </el-form-item>
+            </el-form>
+          </el-card>
+        </el-col>
+      </el-row>
     </div>
 
     <div slot="footer" class="dialog-footer">
@@ -76,8 +169,8 @@
       <el-button size="mini" @click="resetForm">重置</el-button>
       <el-button
         type="warning"
-        plain
-        :loading="buttonLoading"
+        size="mini"
+        :loading="loading"
         @click="isVisible = false"
       >
         {{ $t("common.cancel") }}
@@ -86,7 +179,11 @@
   </el-dialog>
 </template>
 <script>
-import { getAllSuppliers } from '@/api/pms'
+import {
+  getAllSuppliersApi,
+  getAllMaterialsApi,
+  createOrUpdatePurchaseOrderApi
+} from '@/api/pms'
 export default {
   name: 'MaterialEdit',
   props: {
@@ -101,32 +198,35 @@ export default {
     dto: {
       type: Object,
       default: () => ({
-        materialId: null,
-        materialName: null,
-        img: null,
-        unit: null,
-        createTime: null,
-        modifyTime: null,
-        deleteStatus: null
+        masterId: '',
+        supplier: {},
+        payType: null,
+        payStatus: false,
+        freightPayStatus: false,
+        freight: null,
+        purchaseOrderDetailVoSet: [],
+        remark: ''
       })
     }
   },
   data() {
     return {
-      // material的数据由父组件决定
-      purchaseOrderMaster: {},
       loading: false,
       selectValue: '',
       options: [],
+      allMaterials: [],
+      allSuppliers: [],
       commodities: [],
-      postForm: {
-        Amount: null,
-        Remarks: '',
-        Goods: []
-      },
+      amounTotal: 0,
+      amounCount: 0,
+      postForm: this.initPostForm(),
       rules: {
-        Amount: [{ required: true, message: '请输入', trigger: 'blur' }],
-        Remarks: [{ max: 255, message: '最多255  个字符', trigger: 'blur' }]
+        remark: [{ max: 255, message: '最多255  个字符', trigger: 'blur' }],
+        supplierId: {
+          required: true,
+          message: this.$t('rules.require'),
+          trigger: 'change'
+        }
       }
     }
   },
@@ -141,119 +241,176 @@ export default {
     }
   },
   watch: {
+    commodities: {
+      handler(n, o) {
+        this.amounTotal = 0
+        this.amounCount = 0
+        if (!n || !n.length || n.length <= 0) {
+          return
+        }
+        this.amounCount = n.length
+        n.forEach(good => {
+          this.amounTotal += good.price * good.count
+        })
+      },
+      deep: true
+    },
+    'postForm.supplierId': function(n, o) {
+
+    },
     dto: {
       handler(n, o) {
-        this.purchaseOrderMaster = { ...n }
+        const dtoInfo = { ...n }
+        this.postForm.masterId = dtoInfo.masterId
+        const supplier = dtoInfo.supplier
+        if (supplier) {
+          this.postForm.supplierId = supplier.supplierId
+        }
+        this.postForm.orderIsPaid = dtoInfo.payStatus === 2
+        this.postForm.freightIsPaid = dtoInfo.freightPayStatus === 2
+        this.postForm.payType = dtoInfo.payType
+        this.postForm.freight = dtoInfo.freight
+        this.postForm.remark = dtoInfo.remark
+        const purchaseOrderDetailVoSet = dtoInfo.purchaseOrderDetailVoSet
+        if (purchaseOrderDetailVoSet) {
+          this.commodities = purchaseOrderDetailVoSet.map(detailVo => {
+            this.allMaterials.forEach(el => {
+            // 让物料下拉列表的相关属性不可选
+              if (el.materialId === detailVo.materialId) {
+                el.disabled = true
+              }
+            })
+            // 将订单明细返回给commodities，从而渲染到列表中
+            return {
+              ...detailVo.material,
+              count: detailVo.count,
+              disabled: true,
+              detailId: detailVo.detailId
+            }
+          })
+        }
       },
       deep: true
     }
   },
   mounted() {
-    this.fetchData()
+    this.initAllSuppliers()
+    this.initAllMaterials()
   },
   methods: {
-    initSuppliers: function() {
-      getAllSuppliers(r => {
-        this.suppliers = r.data.data
+    getArrDifference(arr1, arr2) {
+      return arr1.concat(arr2).filter(function(v, i, arr) {
+        return arr.indexOf(v.count) === arr.lastIndexOf(v.count)
+      })
+    },
+    initAllSuppliers: function() {
+      getAllSuppliersApi().then(r => {
+        this.allSuppliers = r.data.data
       })
     },
     close: function() {
+      this.resetForm()
       this.$emit('close')
     },
-    fetchData() {
-      this.options = [
-        {
-          Quantity: 0,
-          ID: '111',
-          Name: 'MKBL',
-          Colour: 'MKBL',
-          Size: 'MKBL-2285AS',
-          Brand: 'MKBL-2285AS',
-          Number: 1,
-          PresaleNumber: 1,
-          SalesVolume: 1,
-          Price: 1,
-          PurchasePrice: 0
-        },
-        {
-          Quantity: 0,
-          ID: '222',
-          Name: '玉米种',
-          Colour: '绿色',
-          Size: '呼呼',
-          Brand: '于海波',
-          Number: 16,
-          PresaleNumber: 3,
-          SalesVolume: 2,
-          Price: 100,
-          PurchasePrice: 0
-        },
-        {
-          Quantity: 0,
-          ID: '333',
-          Name: '蘑菇头',
-          Colour: '绿色',
-          Size: '呼呼',
-          Brand: '于海波',
-          Number: 16,
-          PresaleNumber: 3,
-          SalesVolume: 2,
-          Price: 100,
-          PurchasePrice: 0
-        }
-      ]
+    initAllMaterials: function() {
+      getAllMaterialsApi().then(r => {
+        this.allMaterials = r.data.data.map(item => {
+          return {
+            count: 0,
+            materialId: item.materialId,
+            materialName: item.materialName,
+            img: item.img,
+            unit: item.unit,
+            standard: item.standard,
+            price: item.price
+          }
+        })
+      })
     },
-    submitForm() {
-      this.$refs['postForm'].validate(valid => {
-        if (valid) {
+    submitForm: function() {
+      this.$refs['postForm'].validate(v1 => {
+        if (!v1) {
+          return
+        }
+        this.$refs.postForm2.validate(v2 => {
+          if (!v2) {
+            return
+          }
           const len = this.commodities.length
           if (len <= 0) {
             this.$message.error('请添加商品')
             return
           }
           for (let i = 0; i < len; i++) {
-            if (this.commodities[i].Quantity <= 0) {
+            if (this.commodities[i].count <= 0) {
               this.$message.error('商品数量不能为 0')
-              this.postForm.Goods = []
+              this.postForm.purchaseOrderDetailList = []
               return
             }
-            this.postForm.Goods.push({
-              ID: this.commodities[i].ID,
-              Number: this.commodities[i].Quantity
+            this.postForm.purchaseOrderDetailList.push({
+              detailId: this.commodities[i].detailId,
+              materialId: this.commodities[i].materialId,
+              count: this.commodities[i].count
             })
           }
-
-          console.log(this.postForm)
           this.loading = true
-          /**
-           *
-           */
-          this.loading = false
-        }
+          createOrUpdatePurchaseOrderApi(this.postForm)
+            .then(r => {
+              this.$message({
+                message: '创建成功',
+                type: 'success'
+              })
+              this.loading = false
+              this.$emit('success')
+              this.close()
+            })
+            .catch(e => {
+              this.loading = false
+            })
+        })
       })
     },
     selectChange() {
       if (this.selectValue !== '') {
-        this.selectValue.Disabled = true
+        this.selectValue.disabled = true
         this.commodities.push(this.selectValue)
         this.selectValue = ''
       }
     },
     handleDelete(index, row) {
       this.commodities.splice(index, 1)
-      row.Disabled = false
+      row.disabled = false
     },
+    handleAmountTotal: function(n, o, price, count) {},
     resetForm() {
-      this.postForm.Amount = null
-      this.postForm.Remarks = ''
-      this.postForm.Goods = []
       for (let i = 0; i < this.commodities.length; i++) {
-        this.commodities[i].Disabled = false
+        this.commodities[i].disabled = false
       }
-
       this.commodities = []
+      this.amounTotal = 0
+      this.amounCount = 0
+      this.postForm = this.initPostForm()
+    },
+    initPostForm: function() {
+      return {
+        masterId: null,
+        remark: '',
+        purchaseOrderDetailList: [],
+        supplierId: null,
+        payType: null,
+        freight: null,
+        freightIsPaid: false,
+        orderIsPaid: false
+      }
     }
   }
 }
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.el-card {
+  margin-top: 30px;
+  form.el-form {
+    margin-top: 20px;
+  }
+}
+</style>

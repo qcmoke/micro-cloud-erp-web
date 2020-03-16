@@ -330,6 +330,8 @@ export default {
         this.total = data.total
         this.list = data.rows
         this.loading = false
+      }).catch(e => {
+        this.loading = false
       })
     },
     sortChange(val) {

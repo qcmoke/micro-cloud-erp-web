@@ -53,7 +53,10 @@
           />
         </template>
       </el-table-column>
+      <el-table-column prop="price" label="单价" min-width="50px" />
       <el-table-column prop="unit" label="单位" min-width="50px" />
+      <el-table-column prop="standard" label="规格" min-width="50px" />
+      <el-table-column prop="safetyStock" label="安全库存量" min-width="80px" />
       <el-table-column prop="createTime" label="创建时间" min-width="150px" />
       <el-table-column prop="modifyTime" label="修改时间" min-width="150px" />
       <el-table-column
@@ -133,8 +136,10 @@ export default {
       const params = this.query
       pageMaterialApi(params).then(r => {
         this.pageResult = r.data.data
+        this.loading = false
+      }).catch(e => {
+        this.loading = false
       })
-      this.loading = false
     },
     search: function() {
       this.fetch()
@@ -152,8 +157,8 @@ export default {
     },
     edit: function(row) {
       this.dialog.title = this.$t('common.edit')
-      const { materialId, materialName, img, unit } = row
-      this.dialog.dto = { materialId, materialName, img, unit }
+      const { materialId, materialName, img, unit, standard, price, safetyStock } = row
+      this.dialog.dto = { materialId, materialName, img, unit, standard, price, safetyStock }
       this.dialog.isVisible = true
     },
     singleDelete: function(row) {

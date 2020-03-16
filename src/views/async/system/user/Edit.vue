@@ -294,6 +294,8 @@ export default {
                 type: 'success'
               })
               this.$emit('success')
+            }).catch(e => {
+              this.buttonLoading = false
             })
           } else {
             // update
@@ -305,6 +307,8 @@ export default {
               this.$message({
                 message: this.$t('tips.updateSuccess'),
                 type: 'success'
+              }).catch(e => {
+                this.buttonLoading = false
               })
               this.$emit('success')
             })

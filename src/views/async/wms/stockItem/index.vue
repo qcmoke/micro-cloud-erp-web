@@ -34,48 +34,52 @@
       :key="tableKey"
       v-loading="loading"
       :data="pageResult.rows"
-      border
       fit
       style="width: 100%;"
       @selection-change="onSelectChange"
     >
       <el-table-column type="selection" align="center" width="40px" />
+
       <el-table-column
-        prop="purchaseOrderMasterId"
-        label="订单编号"
+        prop="stockTypeInfo"
+        label="出入库类型"
         min-width="150px"
       />
-      <el-table-column prop="createUserId" label="创建的用户" min-width="150px">
-        <template slot-scope="{ row }">
-          <span v-if="row.createUser">
-            {{ row.createUser.username }}
-          </span>
-        </template>
-      </el-table-column>
+      <el-table-column
+        prop="stockItemId"
+        label="出入库编号"
+        min-width="150px"
+      />
+      <el-table-column
+        prop="itemTypeInfo"
+        label="货物类型"
+        min-width="150px"
+      />
+      <el-table-column
+        prop="applyUserName"
+        label="移交用户"
+        min-width="150px"
+      />
       <el-table-column
         prop="checkStatusInfo"
         label="审核状态"
         min-width="150px"
-      />
-      <el-table-column label="最近审核用户" min-width="150px">
-        <template slot-scope="{ row }">
-          <span v-if="row.checkUser">
-            {{ row.checkUser.username }}
-          </span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="refundChannelInfo"
-        label="退款渠道"
+      />  <el-table-column
+        prop="finishStatusInfo"
+        label="完成状态"
+        min-width="150px"
+      />  <el-table-column
+        prop="orderId"
+        label="订单编号"
         min-width="150px"
       />
-      <el-table-column prop="totalAmount" label="总金额" min-width="80px" />
-      <el-table-column prop="statusInfo" label="退货状态" min-width="150px" />
-      <el-table-column prop="reason" label="退货原因" min-width="180px" />
-      <el-table-column prop="outDate" label="发货日期" min-width="150px" />
-      <el-table-column prop="finishedTime" label="完成时间" min-width="150px" />
-      <el-table-column prop="createTime" label="创建时间" min-width="150px" />
-      <el-table-column prop="modifyTime" label="修改时间" min-width="80px" />
+      <el-table-column
+        prop="makeDate"
+        label="出入库时间"
+        min-width="150px"
+      />
+      <el-table-column prop="createTime" label="创建时间" min-width="155px" />
+      <el-table-column prop="modifyTime" label="修改时间" min-width="155px" />
       <el-table-column
         :label="$t('table.operation')"
         align="center"
@@ -96,8 +100,8 @@
               >审核不通过</el-dropdown-item>
               <el-dropdown-item
                 :disabled="row.checkStatus != 3"
-                @click.native="toShip(row)"
-              >发货</el-dropdown-item>
+                @click.native="addItemToStock(row)"
+              >入库</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -115,16 +119,16 @@
 
 <script>
 import {
-  pageMaterialRefundApi,
-  batchDeleteMaterialRefundApi,
-  toShipApi,
+  pageApi,
   checkPassApi,
-  checkFailApi
-} from '@/api/pms'
+  checkFailApi,
+  addItemToStockApi,
+  batchDeleteMaterialRefundApi
+} from '@/api/wms'
 import Pagination from '@/components/Pagination'
 
 export default {
-  name: 'RefundManage',
+  name: 'StockItemManage',
   components: { Pagination },
   data() {
     return {
@@ -150,7 +154,7 @@ export default {
     fetch: function() {
       this.loading = true
       const params = this.query
-      pageMaterialRefundApi(params)
+      pageApi(params)
         .then(r => {
           this.pageResult = r.data.data
           this.loading = false
@@ -185,9 +189,9 @@ export default {
         cancelButtonText: this.$t('common.cancel'),
         type: 'warning'
       }).then(() => {
-        const refundIds = this.selection.map(row => row.refundId).join()
+        const stockItemIds = this.selection.map(row => row.stockItemId).join()
         this.loading = true
-        batchDeleteMaterialRefundApi(refundIds)
+        batchDeleteMaterialRefundApi(stockItemIds)
           .then(r => {
             this.$message({
               message: this.$t('tips.deleteSuccess'),
@@ -209,7 +213,7 @@ export default {
       this.selection = selection
     },
     checkFail: function(row) {
-      checkFailApi({ refundId: row.refundId }).then(r => {
+      checkFailApi({ stockItemId: row.stockItemId }).then(r => {
         this.$message({
           message: '操作成功',
           type: 'success'
@@ -218,7 +222,7 @@ export default {
       })
     },
     checkPass: function(row) {
-      checkPassApi({ refundId: row.refundId }).then(r => {
+      checkPassApi({ stockItemId: row.stockItemId }).then(r => {
         this.$message({
           message: '操作成功',
           type: 'success'
@@ -226,8 +230,8 @@ export default {
         this.search()
       })
     },
-    toShip: function(row) {
-      toShipApi({ refundId: row.refundId }).then(r => {
+    addItemToStock: function(row) {
+      addItemToStockApi([row.stockItemId]).then(r => {
         this.$message({
           message: '操作成功',
           type: 'success'

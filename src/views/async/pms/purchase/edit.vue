@@ -70,11 +70,7 @@
       <el-table-column label="采购单价" prop="price" align="center" />
       <el-table-column label="数量" width="160" align="center">
         <template slot-scope="scope">
-          <el-input-number
-            v-model="scope.row.count"
-            :min="0"
-            size="mini"
-          />
+          <el-input-number v-model="scope.row.count" :min="0" size="mini" />
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center">
@@ -285,32 +281,36 @@ export default {
       })
     },
     initAllSuppliers: function() {
-      getAllSuppliersApi().then(r => {
-        this.allSuppliers = r.data.data
-      }).catch(e => {
-        console.error('获取供应商列表失败', e)
-      })
+      getAllSuppliersApi()
+        .then(r => {
+          this.allSuppliers = r.data.data
+        })
+        .catch(e => {
+          console.error('获取供应商列表失败', e)
+        })
     },
     close: function() {
       this.resetForm()
       this.$emit('close')
     },
     initAllMaterials: function() {
-      getAllMaterialsApi().then(r => {
-        this.allMaterials = r.data.data.map(item => {
-          return {
-            count: 0,
-            materialId: item.materialId,
-            materialName: item.materialName,
-            img: item.img,
-            unit: item.unit,
-            standard: item.standard,
-            price: item.price
-          }
+      getAllMaterialsApi()
+        .then(r => {
+          this.allMaterials = r.data.data.map(item => {
+            return {
+              count: 0,
+              materialId: item.materialId,
+              materialName: item.materialName,
+              img: item.img,
+              unit: item.unit,
+              standard: item.standard,
+              price: item.price
+            }
+          })
         })
-      }).catch(e => {
-        console.error('获取物料列表失败')
-      })
+        .catch(e => {
+          console.error('获取物料列表失败')
+        })
     },
     submitForm: function() {
       this.$refs['postForm'].validate(v1 => {
@@ -373,7 +373,9 @@ export default {
     setMaterialBeDisable: function(flag, id) {
       if (id) {
         this.allMaterials.forEach(elm => {
-          if (id === elm.materialId) { elm.disabled = flag }
+          if (id === elm.materialId) {
+            elm.disabled = flag
+          }
         })
       } else {
         this.allMaterials.forEach(elm => {
@@ -384,6 +386,9 @@ export default {
     resetForm: function() {
       // 让物料列表所有物料重新可选
       this.setMaterialBeDisable(false)
+      this.tableDetails.forEach(elm => {
+        elm.count = 0
+      })
       this.tableDetails = []
       this.amounTotal = 0
       this.amounCount = 0

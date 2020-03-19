@@ -38,7 +38,7 @@
               :render-header="(h, cos) => renderHeader(h, cos, props.row)"
             >
               <el-table-column
-                label="订单明细ID"
+                label="编号"
                 prop="detailId"
                 align="center"
               />
@@ -53,11 +53,13 @@
                 label="创建时间"
                 prop="createTime"
                 align="center"
+                min-width="155px"
               />
               <el-table-column
                 label="修改时间"
                 prop="modifyTime"
                 align="center"
+                min-width="155px"
               />
             </el-table-column>
           </el-table>
@@ -93,22 +95,39 @@
         align="center"
         label="支付状态"
         min-width="80px"
+        :formatter="(r, c) => (r.payStatus === 2 ? '已支付' : '未支付')"
       />
       <el-table-column
         prop="payType"
         label="支付类型"
-        min-width="60px"
+        min-width="80px"
         :formatter="formatterPayType"
       />
-      <el-table-column prop="purchaseDate" label="支付时间" min-width="150px" />
+      <el-table-column prop="purchaseDate" label="支付时间" min-width="155px" />
       <el-table-column
         prop="status"
-        label="入库状态"
+        label="审核状态"
         min-width="100px"
         :formatter="formatterStatus"
       />
-      <el-table-column prop="createTime" label="创建时间" min-width="150px" />
-      <el-table-column prop="modifyTime" label="修改时间" min-width="150px" />
+      <el-table-column
+        prop="transferStockStatus"
+        label="移交状态"
+        min-width="100px"
+        align="center"
+        :formatter="
+          (r, c) =>
+            r.transferStockStatus === 4
+              ? '已完成移交'
+              : r.transferStockStatus === 3
+                ? '移交失败'
+                : r.transferStockStatus === 2
+                  ? '已移交申请'
+                  : '未移交'
+        "
+      />
+      <el-table-column prop="createTime" label="创建时间" min-width="155px" />
+      <el-table-column prop="modifyTime" label="修改时间" min-width="155px" />
       <el-table-column
         :label="$t('table.operation')"
         align="center"
@@ -120,21 +139,17 @@
             审核
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item
-                :disabled="row.status == 0 || row.status === 4"
+                :disabled="row.status == 1 || row.status === 4"
                 @click.native="checkPass(row.masterId)"
               >审核通过</el-dropdown-item>
               <el-dropdown-item
-                :disabled="row.status == 0 || row.status === 4"
+                :disabled="row.status == 1 || row.status === 3"
                 @click.native="checkFail(row.masterId)"
               >审核不通过</el-dropdown-item>
               <el-dropdown-item
-                :disabled="row.status != 3"
-                @click.native="addToStock(row.masterId)"
-              >入库</el-dropdown-item>
-              <el-dropdown-item
-                :disabled="row.status == 0"
-                @click.native="toRefund(row.masterId)"
-              >退订</el-dropdown-item>
+                :disabled="row.status != 4"
+                @click.native="transferToStock(row.masterId)"
+              >移交仓库</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -153,7 +168,7 @@
 <script>
 import {
   pagePurchaseOrderMasterForAddStockApi,
-  addMaterialToStockApi,
+  transferToStockApi,
   updatePurchaseOrderMasterApi
 } from '@/api/pms'
 import Pagination from '@/components/Pagination'
@@ -202,12 +217,14 @@ export default {
     fetch: function() {
       this.loading = true
       const params = this.query
-      pagePurchaseOrderMasterForAddStockApi(params).then(r => {
-        this.pageResult = r.data.data
-        this.loading = false
-      }).catch(e => {
-        this.loading = false
-      })
+      pagePurchaseOrderMasterForAddStockApi(params)
+        .then(r => {
+          this.pageResult = r.data.data
+          this.loading = false
+        })
+        .catch(e => {
+          this.loading = false
+        })
     },
     search: function() {
       this.fetch()
@@ -224,14 +241,12 @@ export default {
     formatterStatus: function(row, column) {
       switch (row.status) {
         case 4:
-          return '审核通过并已入库'
+          return '审核通过'
         case 3:
-          return '审核通过但未入库'
-        case 2:
           return '审核不通过'
-        case 1:
+        case 2:
           return '已提交申请但未审核'
-        case 0:
+        case 1:
           return '未提交入库申请'
         default:
           return row.status
@@ -262,24 +277,9 @@ export default {
     /**
      * 行功能操作
      */
-    checkFail: async function(masterId) {
+    checkFail: function(masterId) {
       this.loading = true
-      await updatePurchaseOrderMasterApi({
-        masterId: masterId,
-        status: 2
-      }).then(r => {
-        this.$message({
-          message: '操作成功',
-          type: 'success'
-        })
-      })
-      this.loading = false
-      this.$refs.table.clearSelection()
-      this.search()
-    },
-    checkPass: async function(masterId) {
-      this.loading = true
-      await updatePurchaseOrderMasterApi({
+      updatePurchaseOrderMasterApi({
         masterId: masterId,
         status: 3
       }).then(r => {
@@ -287,25 +287,45 @@ export default {
           message: '操作成功',
           type: 'success'
         })
+        this.loading = false
+        this.$refs.table.clearSelection()
+        this.search()
+      }).catch(_ => {
+        this.loading = false
       })
-      this.loading = false
-      this.$refs.table.clearSelection()
-      this.search()
     },
-    addToStock: async function(masterId) {
+    checkPass: function(masterId) {
       this.loading = true
-      await addMaterialToStockApi(masterId).then(r => {
+      updatePurchaseOrderMasterApi({
+        masterId: masterId,
+        status: 4
+      }).then(r => {
         this.$message({
           message: '操作成功',
           type: 'success'
         })
+        this.loading = false
+        this.$refs.table.clearSelection()
+        this.search()
+      }).catch(_ => {
+        this.loading = false
       })
-      this.loading = false
-      this.$refs.table.clearSelection()
-      this.search()
     },
-    toRefund: function(masterId) {
-      console.log(masterId)
+    transferToStock: function(masterId) {
+      this.loading = true
+      transferToStockApi(masterId)
+        .then(r => {
+          this.$message({
+            message: '操作成功',
+            type: 'success'
+          })
+          this.loading = false
+          this.$refs.table.clearSelection()
+          this.search()
+        })
+        .catch(_ => {
+          this.loading = false
+        })
     }
   }
 }

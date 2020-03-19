@@ -54,7 +54,7 @@
               :render-header="(h, cos) => renderHeader(h, cos, props.row)"
             >
               <el-table-column
-                label="订单明细ID"
+                label="编号"
                 prop="detailId"
                 align="center"
               />
@@ -68,11 +68,13 @@
                 label="创建时间"
                 prop="createTime"
                 align="center"
+                min-width="155px"
               />
               <el-table-column
                 label="修改时间"
                 prop="modifyTime"
                 align="center"
+                min-width="155px"
               />
             </el-table-column>
           </el-table>
@@ -137,14 +139,30 @@
         prop="purchaseDate"
         align="center"
         label="支付时间"
-        min-width="150px"
+        min-width="155px"
       />
       <el-table-column
         prop="status"
-        label="入库状态"
+        label="审核状态"
         min-width="100px"
         align="center"
         :formatter="formatterStatus"
+      />
+      <el-table-column
+        prop="transferStockStatus"
+        label="移交状态"
+        min-width="100px"
+        align="center"
+        :formatter="
+          (r, c) =>
+            r.transferStockStatus === 4
+              ? '已完成移交'
+              : r.transferStockStatus === 3
+                ? '移交失败'
+                : r.transferStockStatus === 2
+                  ? '已移交申请'
+                  : '未移交'
+        "
       />
       <el-table-column
         label="备注"
@@ -156,13 +174,13 @@
         prop="createTime"
         align="center"
         label="创建时间"
-        min-width="150px"
+        min-width="155px"
       />
       <el-table-column
         prop="modifyTime"
         align="center"
         label="修改时间"
-        min-width="150px"
+        min-width="155px"
       />
       <el-table-column
         :label="$t('table.operation')"
@@ -182,12 +200,18 @@
             @click="edit(row)"
           />
           <el-button
-            :disabled="row.status != 0 && row.status != 2"
+            :disabled="row.status != 1 && row.status != 3"
             type="success"
             size="mini"
             class="btn-apply-stock"
-            @click="toApplyStock(row)"
-          >入库申请</el-button>
+            @click="toApplyCheck(row)"
+          >申请审核</el-button>
+          <el-button
+            type="danger"
+            size="mini"
+            :disabled="row.status != 1 && row.status != 3"
+            @click.native="toRefund(row)"
+          >退订</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -206,6 +230,12 @@
       @success="search"
       @close="dialog.isVisible = false"
     />
+    <refund-form
+      :dialog-visible="refundFormDialog.isVisible"
+      :master-id="refundFormDialog.masterId"
+      @success="search"
+      @close="refundFormDialog.isVisible = false"
+    />
   </div>
 </template>
 
@@ -217,10 +247,11 @@ import {
 } from '@/api/pms'
 import Pagination from '@/components/Pagination'
 import PurchaseEdit from './edit'
+import RefundForm from './refund-form'
 
 export default {
   name: 'PurchaseManage',
-  components: { Pagination, PurchaseEdit },
+  components: { Pagination, PurchaseEdit, RefundForm },
   data() {
     return {
       query: {
@@ -238,6 +269,7 @@ export default {
         title: '',
         dto: {}
       },
+      refundFormDialog: { isVisible: false, masterId: null },
       selection: [],
       loading: false,
       tableKey: 0
@@ -263,12 +295,14 @@ export default {
     fetch: function() {
       this.loading = true
       const params = this.query
-      pagePurchaseOrderMasterApi(params).then(r => {
-        this.pageResult = r.data.data
-        this.loading = false
-      }).catch(e => {
-        this.loading = false
-      })
+      pagePurchaseOrderMasterApi(params)
+        .then(r => {
+          this.pageResult = r.data.data
+          this.loading = false
+        })
+        .catch(e => {
+          this.loading = false
+        })
     },
     search: function() {
       this.fetch()
@@ -285,7 +319,7 @@ export default {
       this.dialog.isVisible = true
     },
     edit: function(row) {
-      if (row.status >= 3) {
+      if (row.status === 4) {
         this.$message({
           message: '包含已审核通过的订单，不允许修改',
           type: 'warning'
@@ -293,8 +327,26 @@ export default {
         return
       }
       this.dialog.title = '编辑订单'
-      const { masterId, supplier, payType, payStatus, freightPayStatus, freight, purchaseOrderDetailVoSet, remark } = row
-      this.dialog.dto = { masterId, supplier, payType, payStatus, freightPayStatus, freight, purchaseOrderDetailVoSet, remark }
+      const {
+        masterId,
+        supplier,
+        payType,
+        payStatus,
+        freightPayStatus,
+        freight,
+        purchaseOrderDetailVoSet,
+        remark
+      } = row
+      this.dialog.dto = {
+        masterId,
+        supplier,
+        payType,
+        payStatus,
+        freightPayStatus,
+        freight,
+        purchaseOrderDetailVoSet,
+        remark
+      }
       this.dialog.isVisible = true
     },
     singleDelete: function(row) {
@@ -304,7 +356,7 @@ export default {
     batchDelete: function() {
       var canDelete = true
       this.selection.forEach(elm => {
-        if (elm.status >= 3) {
+        if (elm.status === 4) {
           canDelete = false
         }
       })
@@ -354,15 +406,13 @@ export default {
     formatterStatus: function(row, column) {
       switch (row.status) {
         case 4:
-          return '审核通过并已入库'
+          return '审核通过'
         case 3:
-          return '审核通过但未入库'
-        case 2:
           return '审核不通过'
-        case 1:
+        case 2:
           return '已提交申请但未审核'
-        case 0:
-          return '未提交入库申请'
+        case 1:
+          return '未提交申请'
         default:
           return row.status
       }
@@ -385,10 +435,10 @@ export default {
     /**
      * 行功能操作
      */
-    toApplyStock: function(row) {
+    toApplyCheck: function(row) {
       const masterId = row.masterId
       this.loading = true
-      updatePurchaseOrderMasterApi({ masterId: masterId, status: 1 })
+      updatePurchaseOrderMasterApi({ masterId: masterId, status: 2 })
         .then(r => {
           this.$message({
             message: '申请成功',
@@ -403,6 +453,10 @@ export default {
           this.loading = false
           this.$refs.table.clearSelection()
         })
+    },
+    toRefund: function(row) {
+      this.refundFormDialog.isVisible = true
+      this.refundFormDialog.masterId = row.masterId
     }
   }
 }

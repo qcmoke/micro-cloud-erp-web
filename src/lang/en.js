@@ -1,3 +1,5 @@
+import { title } from '@/settings'
+
 export default {
   route: {
     dashboard: 'Dashboard',
@@ -12,7 +14,7 @@ export default {
     deleteCache: 'DeleteCache'
   },
   login: {
-    title: 'M-ERP System Login',
+    title: `${title} System Login`,
     logIn: 'Login',
     username: 'Username',
     password: 'Password',
@@ -116,7 +118,7 @@ export default {
     sidebarLogo: 'Sidebar Logo'
   },
   system: {
-    title: 'M-ERP'
+    title: `${title}`
   },
   tips: {
     switchLanguageSuccess: 'Switch language successfully',

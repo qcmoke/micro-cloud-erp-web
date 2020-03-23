@@ -39,6 +39,7 @@
       @selection-change="onSelectChange"
     >
       <el-table-column type="selection" align="center" width="40px" />
+      <el-table-column prop="materialId" label="编号" min-width="60px" />
       <el-table-column prop="materialName" label="名称" min-width="150px" />
       <el-table-column prop="img" label="图片" min-width="50px">
         <template

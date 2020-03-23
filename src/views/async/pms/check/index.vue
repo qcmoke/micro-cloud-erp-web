@@ -24,7 +24,8 @@
       :row-class-name="tableRowClassName"
       @selection-change="onSelectChange"
     >
-      <el-table-column type="expand">
+
+      <el-table-column type="expand" fixed width="20px">
         <template slot-scope="props">
           <el-table
             :data="props.row.purchaseOrderDetailVoSet"
@@ -48,7 +49,6 @@
                 align="center"
               />
               <el-table-column label="采购数量" prop="count" align="center" />
-              <el-table-column label="备注" prop="remark" align="center" />
               <el-table-column
                 label="创建时间"
                 prop="createTime"
@@ -65,18 +65,34 @@
           </el-table>
         </template>
       </el-table-column>
-      <el-table-column type="selection" align="center" width="40px" />
-      <el-table-column prop="masterId" label="订单编号" min-width="60px" />
-      <el-table-column prop="supplier" label="供应商" min-width="60px">
+
+      <el-table-column
+        fixed
+        type="index"
+        width="40px"
+        label="#"
+      />
+      <el-table-column
+        prop="masterId"
+        align="center"
+        label="订单编号"
+        min-width="80px"
+      />
+      <el-table-column
+        prop="supplier"
+        align="center"
+        label="供应商"
+        min-width="80px"
+      >
         <template slot-scope="scope">
           <div>{{ scope.row.supplier.supplierName }}</div>
         </template>
       </el-table-column>
       <el-table-column
         prop="totalAmount"
-        label="总金额"
-        min-width="60px"
         align="center"
+        label="总金额"
+        min-width="80px"
       />
       <el-table-column
         prop="freight"
@@ -98,41 +114,52 @@
         :formatter="(r, c) => (r.payStatus === 2 ? '已支付' : '未支付')"
       />
       <el-table-column
-        prop="payType"
+        prop="payTypeInfo"
         label="支付类型"
         min-width="80px"
-        :formatter="formatterPayType"
       />
-      <el-table-column prop="purchaseDate" label="支付时间" min-width="155px" />
       <el-table-column
-        prop="status"
-        label="审核状态"
+        prop="purchaseDate"
+        align="center"
+        label="支付时间"
+        min-width="155px"
+      />
+      <el-table-column
+        prop="statusInfo"
+        label="入库状态"
         min-width="100px"
-        :formatter="formatterStatus"
+        align="center"
       />
       <el-table-column
-        prop="transferStockStatus"
+        prop="transferStockStatusInfo"
         label="移交状态"
         min-width="100px"
         align="center"
-        :formatter="
-          (r, c) =>
-            r.transferStockStatus === 4
-              ? '已完成移交'
-              : r.transferStockStatus === 3
-                ? '移交失败'
-                : r.transferStockStatus === 2
-                  ? '已移交申请'
-                  : '未移交'
-        "
       />
-      <el-table-column prop="createTime" label="创建时间" min-width="155px" />
-      <el-table-column prop="modifyTime" label="修改时间" min-width="155px" />
+      <el-table-column
+        label="备注"
+        prop="remark"
+        min-width="100px"
+        align="center"
+      />
+      <el-table-column
+        prop="createTime"
+        align="center"
+        label="创建时间"
+        min-width="155px"
+      />
+      <el-table-column
+        prop="modifyTime"
+        align="center"
+        label="修改时间"
+        min-width="155px"
+      />
       <el-table-column
         :label="$t('table.operation')"
         align="center"
-        min-width="300px"
+        min-width="110px"
         class-name="small-padding fixed-width"
+        fixed="right"
       >
         <template slot-scope="{ row }">
           <el-dropdown size="small" split-button type="primary">
@@ -169,7 +196,8 @@
 import {
   pagePurchaseOrderMasterForAddStockApi,
   transferToStockApi,
-  updatePurchaseOrderMasterApi
+  checkFailPurchaseOrderMasterApi,
+  checkPassPurchaseOrderMasterApi
 } from '@/api/pms'
 import Pagination from '@/components/Pagination'
 
@@ -238,35 +266,6 @@ export default {
     onSelectChange: function(selection) {
       this.selection = selection
     },
-    formatterStatus: function(row, column) {
-      switch (row.status) {
-        case 4:
-          return '审核通过'
-        case 3:
-          return '审核不通过'
-        case 2:
-          return '已提交申请但未审核'
-        case 1:
-          return '未提交入库申请'
-        default:
-          return row.status
-      }
-    },
-    formatterPayType: function(row, column) {
-      switch (row.payType) {
-        case 1:
-          return '支付宝'
-        case 2:
-          return '微信'
-        case 3:
-          return '银联'
-        case 4:
-          return '货到付款'
-        default:
-          break
-      }
-      return row.payType
-    },
     tableRowClassName: function({ row, rowIndex }) {
       if (row.status === 4) {
         return 'success-row'
@@ -279,10 +278,7 @@ export default {
      */
     checkFail: function(masterId) {
       this.loading = true
-      updatePurchaseOrderMasterApi({
-        masterId: masterId,
-        status: 3
-      }).then(r => {
+      checkFailPurchaseOrderMasterApi(masterId).then(r => {
         this.$message({
           message: '操作成功',
           type: 'success'
@@ -296,10 +292,7 @@ export default {
     },
     checkPass: function(masterId) {
       this.loading = true
-      updatePurchaseOrderMasterApi({
-        masterId: masterId,
-        status: 4
-      }).then(r => {
+      checkPassPurchaseOrderMasterApi(masterId).then(r => {
         this.$message({
           message: '操作成功',
           type: 'success'

@@ -78,10 +78,9 @@
       @pagination="search"
     />
     <supplier-edit
-      ref="edit"
+      ref="supplierEdit"
       :dialog-visible="dialog.isVisible"
       :title="dialog.title"
-      :dto="dialog.dto"
       @success="search"
       @close="dialog.isVisible = false"
     />
@@ -109,8 +108,7 @@ export default {
       },
       dialog: {
         isVisible: false,
-        title: '',
-        dto: {}
+        title: ''
       },
       selection: [],
       loading: false,
@@ -148,9 +146,7 @@ export default {
     },
     edit: function(row) {
       this.dialog.title = this.$t('common.edit')
-      // eslint-disable-next-line no-unused-vars
-      const { createTime, modifyTime, deleteStatus, ...needs } = row
-      this.dialog.dto = needs
+      this.$refs.supplierEdit.setRow({ ...row })
       this.dialog.isVisible = true
     },
     singleDelete: function(row) {

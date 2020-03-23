@@ -28,10 +28,10 @@
         <el-input v-model="material.standard" />
       </el-form-item>
       <el-form-item label="单价" prop="price">
-        <el-input v-model="material.price" />
+        <el-input v-model.number="material.price" />
       </el-form-item>
       <el-form-item label="安全库存量" prop="safetyStock">
-        <el-input v-model="material.safetyStock" />
+        <el-input v-model.number="material.safetyStock" />
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">

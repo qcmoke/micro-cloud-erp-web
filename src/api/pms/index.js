@@ -7,6 +7,10 @@ export function pageMaterialApi(params) {
   })
 }
 
+export function getAllMaterialsBySupplierIdApi(supplierId) {
+  return request.get(`/pms/material/getAll/${supplierId}`)
+}
+
 export function getAllMaterialsApi() {
   return request.get('/pms/material/getAll')
 }
@@ -55,19 +59,30 @@ export function createOrUpdatePurchaseOrderApi(params) {
 }
 
 export function batchDeletePurchaseOrderMasterApi(ids) {
-  console.log(ids)
-
   return request({
     url: `/pms/purchaseOrderMaster/${ids}`,
     method: 'delete'
   })
 }
 
-export function updatePurchaseOrderMasterApi(params) {
+export function toApplyCheckPurchaseOrderMasterApi(masterId) {
   return request({
-    url: '/pms/purchaseOrderMaster/updateStatus',
-    method: 'put',
-    data: qs.stringify(params)
+    url: `/pms/purchaseOrderMaster/toApplyCheck/${masterId}`,
+    method: 'put'
+  })
+}
+
+export function checkFailPurchaseOrderMasterApi(masterId) {
+  return request({
+    url: `/pms/purchaseOrderMaster/checkFail/${masterId}`,
+    method: 'put'
+  })
+}
+
+export function checkPassPurchaseOrderMasterApi(masterId) {
+  return request({
+    url: `/pms/purchaseOrderMaster/checkPass/${masterId}`,
+    method: 'put'
   })
 }
 
@@ -99,19 +114,11 @@ export function batchDeleteSupplierApi(ids) {
   })
 }
 
-export function addeSupplierApi(params) {
+export function saveOrUpdateSupplierApi(params) {
   return request({
-    url: '/pms/supplier',
+    url: '/pms/supplier/saveOrUpdate',
     method: 'post',
-    data: qs.stringify(params)
-  })
-}
-
-export function updateSupplierApi(params) {
-  return request({
-    url: '/pms/supplier',
-    method: 'put',
-    data: qs.stringify(params)
+    data: params
   })
 }
 

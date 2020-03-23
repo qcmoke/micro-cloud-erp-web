@@ -39,47 +39,34 @@
       @selection-change="onSelectChange"
     >
       <el-table-column type="selection" align="center" width="40px" />
-
-      <el-table-column
-        prop="stockTypeInfo"
-        label="出入库类型"
-        min-width="150px"
-      />
       <el-table-column
         prop="stockItemId"
         label="出入库编号"
         min-width="150px"
       />
       <el-table-column
-        prop="itemTypeInfo"
-        label="货物类型"
-        min-width="150px"
+        prop="stockTypeInfo"
+        label="出入库类型"
+        min-width="100px"
       />
+      <el-table-column prop="orderId" label="订单编号" min-width="150px" />
+      <el-table-column prop="makeDate" label="出入库时间" min-width="150px" />
+      <el-table-column prop="itemTypeInfo" label="货物类型" min-width="100px" />
       <el-table-column
         prop="applyUserName"
         label="移交用户"
-        min-width="150px"
+        min-width="100px"
       />
       <el-table-column
         prop="checkStatusInfo"
         label="审核状态"
-        min-width="150px"
-      />  <el-table-column
-        prop="finishStatusInfo"
-        label="完成状态"
-        min-width="150px"
-      />  <el-table-column
-        prop="orderId"
-        label="订单编号"
-        min-width="150px"
+        min-width="100px"
       />
       <el-table-column
-        prop="makeDate"
-        label="出入库时间"
-        min-width="150px"
+        prop="finishStatusInfo"
+        label="完成状态"
+        min-width="100px"
       />
-      <el-table-column prop="createTime" label="创建时间" min-width="155px" />
-      <el-table-column prop="modifyTime" label="修改时间" min-width="155px" />
       <el-table-column
         :label="$t('table.operation')"
         align="center"
@@ -87,21 +74,50 @@
         class-name="small-padding fixed-width"
       >
         <template slot-scope="{ row }">
-          <el-dropdown size="small" split-button type="primary">
+
+          <i
+            class="el-icon-view table-operation"
+            style="color: #2db7f5;"
+            @click="viewDetails(row)"
+          />
+
+          <el-dropdown
+            split-button
+            size="small"
+            :type="
+              row.finishStatus === FINISH_TYPE.NO_FINISHED ? 'primary' : 'info'
+            "
+          >
             审核
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item
-                :disabled="row.checkStatus === 3 || row.status != null"
-                @click.native="checkPass(row)"
-              >审核通过</el-dropdown-item>
-              <el-dropdown-item
-                :disabled="row.checkStatus === 2 || row.status != null"
-                @click.native="checkFail(row)"
-              >审核不通过</el-dropdown-item>
-              <el-dropdown-item
-                :disabled="row.checkStatus != 3"
-                @click.native="addItemToStock(row)"
-              >入库</el-dropdown-item>
+              <template v-if="row.finishStatus === FINISH_TYPE.NO_FINISHED">
+                <el-dropdown-item
+                  :disabled="row.checkStatus === CHECK_TYPE.PASS"
+                  @click.native="checkPass(row)"
+                >审核通过</el-dropdown-item>
+                <el-dropdown-item
+                  :disabled="row.checkStatus === CHECK_TYPE.NO_PASS"
+                  @click.native="checkFail(row)"
+                >审核不通过</el-dropdown-item>
+                <el-dropdown-item
+                  v-if="
+                    row.checkStatus === CHECK_TYPE.PASS &&
+                      (row.stockType === STOCK_TYPE.PURCHASE_IN ||
+                      row.stockType === STOCK_TYPE.SALE_IN)
+                  "
+                  divided
+                  @click.native="addItemToStock(row)"
+                >收货入库</el-dropdown-item>
+                <el-dropdown-item
+                  v-if="
+                    row.checkStatus === CHECK_TYPE.PASS &&
+                      (row.stockType === STOCK_TYPE.SALE_OUT ||
+                      row.stockType === STOCK_TYPE.PURCHASE_OUT)
+                  "
+                  divided
+                  @click.native="outItemFromStock(row)"
+                >发货出库</el-dropdown-item>
+              </template>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -114,6 +130,21 @@
       :limit.sync="query.pageSize"
       @pagination="search"
     />
+    <ship
+      :dto="deliveryDrawer.dto"
+      :delivery-visible="deliveryDrawer.isVisible"
+      @success="search"
+      @close="
+        () => {
+          deliveryDrawer.isVisible = false;
+        }
+      "
+    />
+    <detail
+      :dialog-visible="detailDialog.isVisible"
+      :dto="detailDialog.dto"
+      @close="detailDialog.isVisible = false"
+    />
   </div>
 </template>
 
@@ -123,15 +154,32 @@ import {
   checkPassApi,
   checkFailApi,
   addItemToStockApi,
+  // outItemFromStockApi,
   batchDeleteMaterialRefundApi
 } from '@/api/wms'
 import Pagination from '@/components/Pagination'
-
+import ship from './ship'
+import detail from './detail'
 export default {
   name: 'StockItemManage',
-  components: { Pagination },
+  components: { Pagination, ship, detail },
   data() {
     return {
+      STOCK_TYPE: {
+        PURCHASE_IN: 1, // 采购入库
+        SALE_OUT: 2, // 销售出库
+        PURCHASE_OUT: 3, // 采购退货出库
+        SALE_IN: 4 // 销售退货入库
+      },
+      CHECK_TYPE: {
+        NO_REVIEWED: 1, // 未审核
+        NO_PASS: 2, // 审核不通过
+        PASS: 3 // 审核通过
+      },
+      FINISH_TYPE: {
+        NO_FINISHED: 1, // 未完成
+        FINISHED: 2 // 已完成
+      },
       query: {
         pageNum: 1,
         pageSize: 5,
@@ -143,7 +191,16 @@ export default {
       },
       selection: [],
       loading: false,
-      tableKey: 0
+      tableKey: 0,
+      deliveryDrawer: {
+        isVisible: false,
+        dto: {}
+      },
+      detailDialog: {
+        isVisible: false,
+        title: '',
+        dto: []
+      }
     }
   },
   computed: {},
@@ -231,13 +288,24 @@ export default {
       })
     },
     addItemToStock: function(row) {
+      this.loading = true
       addItemToStockApi([row.stockItemId]).then(r => {
         this.$message({
           message: '操作成功',
           type: 'success'
         })
         this.search()
+        this.loading = false
       })
+      this.loading = false
+    },
+    outItemFromStock: function(row) {
+      this.deliveryDrawer.isVisible = true
+      this.deliveryDrawer.dto = { ...row }
+    },
+    viewDetails: function(row) {
+      this.detailDialog.dto = [...row.stockItemDetailVos]
+      this.detailDialog.isVisible = true
     }
   }
 }

@@ -12,22 +12,6 @@
       <el-button class="filter-item" type="warning" plain @click="reset">
         {{ $t("table.reset") }}
       </el-button>
-      <el-dropdown trigger="click" class="filter-item">
-        <el-button>
-          {{ $t("table.more") }}<i class="el-icon-arrow-down el-icon--right" />
-        </el-button>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item @click.native="add">{{
-            $t("table.add")
-          }}</el-dropdown-item>
-          <el-dropdown-item @click.native="batchDelete">{{
-            $t("table.delete")
-          }}</el-dropdown-item>
-          <el-dropdown-item @click.native="exportExcel">{{
-            $t("table.export")
-          }}</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
     </div>
     <el-table
       ref="table"
@@ -36,9 +20,13 @@
       :data="pageResult.rows"
       fit
       style="width: 100%;"
-      @selection-change="onSelectChange"
     >
-      <el-table-column type="selection" align="center" width="40px" />
+      <el-table-column
+        label="序号"
+        type="index"
+        width="50"
+      />
+      <el-table-column prop="itemId" label="货物编号" min-width="60px" />
       <el-table-column prop="itemType" label="类型" min-width="60px" />
       <el-table-column prop="itemName" label="货物名称" min-width="160px" />
       <el-table-column prop="itemCount" label="库存量" min-width="120px" />
@@ -138,10 +126,6 @@ export default {
       this.$refs.table.clearSort()
       this.$refs.table.clearFilter()
       this.search()
-    },
-    exportExcel: function() {},
-    onSelectChange: function(selection) {
-      this.selection = selection
     }
   }
 }

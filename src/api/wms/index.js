@@ -24,8 +24,16 @@ export function checkFailApi(params) {
 
 export function addItemToStockApi(arr) {
   return request({
-    url: `/wms/materialStock/addItemToStock/${arr.join()}`,
+    url: `/wms/stockItem/addItemToStock/${arr.join()}`,
     method: 'put'
+  })
+}
+
+export function outItemFromStockApi(params) {
+  return request({
+    url: `/wms/stockItem/outItemFromStock`,
+    method: 'put',
+    data: params
   })
 }
 

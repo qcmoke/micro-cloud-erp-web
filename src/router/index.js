@@ -115,6 +115,14 @@ const constTestMenuRouter = [
         meta: { title: 'testRadioGroup测试页面', icon: '', breadcrumb: true },
         hidden: false,
         alwaysShow: false
+      },
+      {
+        path: '/test/dialogIndex',
+        component: 'test/dialogIndex',
+        name: 'dialogIndex',
+        meta: { title: 'dialogIndex', icon: '', breadcrumb: true },
+        hidden: false,
+        alwaysShow: false
       }
     ]
   }

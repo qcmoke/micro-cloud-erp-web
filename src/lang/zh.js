@@ -1,3 +1,5 @@
+import { title } from '../settings'
+
 export default {
   route: {
     dashboard: '系统主页',
@@ -12,7 +14,7 @@ export default {
     deleteCache: '清除缓存'
   },
   login: {
-    title: 'M-ERP 系统登录',
+    title: `${title} 系统登录`,
     logIn: '立即登录',
     username: '账号',
     password: '密码',
@@ -116,7 +118,7 @@ export default {
     sidebarLogo: '侧边栏 Logo'
   },
   system: {
-    title: 'M-ERP'
+    title: `${title}`
   },
   tips: {
     switchLanguageSuccess: '切换语言成功',

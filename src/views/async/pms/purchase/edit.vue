@@ -20,6 +20,7 @@
           v-model="postForm.supplierId"
           placeholder="请选择"
           size="mini"
+          @change="initAllMaterialsBySupplierId"
         >
           <el-option
             v-for="item in allSuppliers"
@@ -101,24 +102,16 @@
             >
               <el-form-item label="订单支付状态">
                 <el-switch
-                  v-model="postForm.orderIsPaid"
+                  v-model="postForm.isPayStatus"
                   active-color="#13ce66"
                   inactive-color="#ff4949"
                 />
               </el-form-item>
-              <el-form-item label="运费支付状态">
-                <el-switch
-                  v-model="postForm.freightIsPaid"
-                  active-color="#13ce66"
-                  inactive-color="#ff4949"
-                />
-              </el-form-item>
-              <el-form-item label="订单支付类型" label-width="100px">
+              <el-form-item v-if="postForm.isPayStatus" label="订单支付类型" label-width="100px">
                 <el-select
                   v-model="postForm.payType"
                   placeholder="请选择"
                   size="mini"
-                  :disabled="!postForm.orderIsPaid"
                 >
                   <el-option
                     v-for="item in [
@@ -133,12 +126,11 @@
                   />
                 </el-select>
               </el-form-item>
-              <el-form-item label="运费" label-width="100px">
+              <el-form-item v-if="postForm.isPayStatus" label="运费" label-width="100px">
                 <el-input
                   v-model="postForm.freight"
                   size="mini"
                   style="width: 185px;"
-                  :disabled="!postForm.freightIsPaid"
                 />
               </el-form-item>
               <el-form-item label="备注" prop="remark" label-width="100px">
@@ -172,8 +164,8 @@
 <script>
 import {
   getAllSuppliersApi,
-  getAllMaterialsApi,
-  createOrUpdatePurchaseOrderApi
+  createOrUpdatePurchaseOrderApi,
+  getAllMaterialsBySupplierIdApi
 } from '@/api/pms'
 export default {
   name: 'MaterialEdit',
@@ -193,7 +185,6 @@ export default {
         supplier: {},
         payType: null,
         payStatus: false,
-        freightPayStatus: false,
         freight: null,
         purchaseOrderDetailVoSet: [],
         remark: ''
@@ -232,6 +223,12 @@ export default {
     }
   },
   watch: {
+    'postForm.isPayStatus': function(n, o) {
+      if (!n) {
+        this.postForm.payType = null
+        this.postForm.freight = null
+      }
+    },
     // 监控订单明细，并计算出其总金额
     tableDetails: {
       handler(n, o) {
@@ -251,8 +248,8 @@ export default {
       handler(dtoInfo, o) {
         // Object.assign(target,…sources) 有相同的key时，在target对象中的值会被后面source对象的值覆盖
         Object.assign(this.postForm, { ...dtoInfo })
-        this.postForm.orderIsPaid = dtoInfo.payStatus === 2
-        this.postForm.freightIsPaid = dtoInfo.freightPayStatus === 2
+        this.postForm.isPayStatus = dtoInfo.payStatus === 2
+        this.postForm.supplierId = dtoInfo.supplier ? dtoInfo.supplier.supplierId : null
         const purchaseOrderDetailVoSet = dtoInfo.purchaseOrderDetailVoSet
         if (purchaseOrderDetailVoSet) {
           this.tableDetails = purchaseOrderDetailVoSet.map(detailVo => {
@@ -272,7 +269,6 @@ export default {
   },
   mounted() {
     this.initAllSuppliers()
-    this.initAllMaterials()
   },
   methods: {
     getArrDifference(arr1, arr2) {
@@ -293,24 +289,27 @@ export default {
       this.resetForm()
       this.$emit('close')
     },
-    initAllMaterials: function() {
-      getAllMaterialsApi()
-        .then(r => {
-          this.allMaterials = r.data.data.map(item => {
-            return {
-              count: 0,
-              materialId: item.materialId,
-              materialName: item.materialName,
-              img: item.img,
-              unit: item.unit,
-              standard: item.standard,
-              price: item.price
-            }
+    initAllMaterialsBySupplierId: function(value) {
+      if (value) {
+        const supplierId = value
+        getAllMaterialsBySupplierIdApi(supplierId)
+          .then(r => {
+            this.allMaterials = r.data.data.map(item => {
+              return {
+                count: 0,
+                materialId: item.materialId,
+                materialName: item.materialName,
+                img: item.img,
+                unit: item.unit,
+                standard: item.standard,
+                price: item.price
+              }
+            })
           })
-        })
-        .catch(e => {
-          console.error('获取物料列表失败')
-        })
+          .catch(e => {
+            console.error('获取物料列表失败')
+          })
+      }
     },
     submitForm: function() {
       this.$refs['postForm'].validate(v1 => {
@@ -326,6 +325,8 @@ export default {
             this.$message.error('请添加物料')
             return
           }
+
+          this.postForm.purchaseOrderDetailList = []
           for (let i = 0; i < len; i++) {
             if (this.tableDetails[i].count <= 0) {
               this.$message.error('物料数量不能为 0')
@@ -339,15 +340,15 @@ export default {
             })
           }
           this.loading = true
-          createOrUpdatePurchaseOrderApi(this.postForm)
+          createOrUpdatePurchaseOrderApi({ ...this.postForm })
             .then(r => {
               this.$message({
                 message: '创建成功',
                 type: 'success'
               })
-              this.loading = false
               this.$emit('success')
               this.close()
+              this.loading = false
             })
             .catch(e => {
               this.loading = false
@@ -402,8 +403,7 @@ export default {
         supplierId: null,
         payType: null,
         freight: null,
-        freightIsPaid: false,
-        orderIsPaid: false
+        isPayStatus: false
       }
     }
   }

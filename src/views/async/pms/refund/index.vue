@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input
+      <!-- <el-input
         v-model="query.materialName"
         placeholder="名称"
         class="filter-item search-item"
@@ -9,6 +9,7 @@
       <el-button class="filter-item" type="primary" plain @click="search">
         {{ $t("table.search") }}
       </el-button>
+      -->
       <el-button class="filter-item" type="warning" plain @click="reset">
         {{ $t("table.reset") }}
       </el-button>
@@ -17,14 +18,8 @@
           {{ $t("table.more") }}<i class="el-icon-arrow-down el-icon--right" />
         </el-button>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item @click.native="add">{{
-            $t("table.add")
-          }}</el-dropdown-item>
           <el-dropdown-item @click.native="batchDelete">{{
             $t("table.delete")
-          }}</el-dropdown-item>
-          <el-dropdown-item @click.native="exportExcel">{{
-            $t("table.export")
           }}</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -34,7 +29,6 @@
       :key="tableKey"
       v-loading="loading"
       :data="pageResult.rows"
-      border
       fit
       style="width: 100%;"
       @selection-change="onSelectChange"
@@ -45,63 +39,15 @@
         label="订单编号"
         min-width="150px"
       />
-      <el-table-column prop="createUserId" label="创建的用户" min-width="150px">
-        <template slot-scope="{ row }">
-          <span v-if="row.createUser">
-            {{ row.createUser.username }}
-          </span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="checkStatusInfo"
-        label="审核状态"
-        min-width="150px"
-      />
-      <el-table-column label="最近审核用户" min-width="150px">
-        <template slot-scope="{ row }">
-          <span v-if="row.checkUser">
-            {{ row.checkUser.username }}
-          </span>
-        </template>
-      </el-table-column>
       <el-table-column
         prop="refundChannelInfo"
         label="退款渠道"
         min-width="150px"
       />
-      <el-table-column prop="totalAmount" label="总金额" min-width="80px" />
-      <el-table-column prop="statusInfo" label="退货状态" min-width="150px" />
+      <el-table-column prop="totalAmount" label="退订金额" min-width="80px" />
       <el-table-column prop="reason" label="退货原因" min-width="180px" />
-      <el-table-column prop="outDate" label="发货日期" min-width="150px" />
-      <el-table-column prop="finishedTime" label="完成时间" min-width="150px" />
       <el-table-column prop="createTime" label="创建时间" min-width="150px" />
       <el-table-column prop="modifyTime" label="修改时间" min-width="80px" />
-      <el-table-column
-        :label="$t('table.operation')"
-        align="center"
-        min-width="150px"
-        class-name="small-padding fixed-width"
-      >
-        <template slot-scope="{ row }">
-          <el-dropdown size="small" split-button type="primary">
-            审核
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item
-                :disabled="row.checkStatus === 3 || row.status != null"
-                @click.native="checkPass(row)"
-              >审核通过</el-dropdown-item>
-              <el-dropdown-item
-                :disabled="row.checkStatus === 2 || row.status != null"
-                @click.native="checkFail(row)"
-              >审核不通过</el-dropdown-item>
-              <el-dropdown-item
-                :disabled="row.checkStatus != 3"
-                @click.native="toShip(row)"
-              >发货</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </template>
-      </el-table-column>
     </el-table>
     <pagination
       v-show="pageResult.total > 0"
@@ -116,10 +62,7 @@
 <script>
 import {
   pageMaterialRefundApi,
-  batchDeleteMaterialRefundApi,
-  toShipApi,
-  checkPassApi,
-  checkFailApi
+  batchDeleteMaterialRefundApi
 } from '@/api/pms'
 import Pagination from '@/components/Pagination'
 
@@ -204,36 +147,8 @@ export default {
           })
       })
     },
-    exportExcel: function() {},
     onSelectChange: function(selection) {
       this.selection = selection
-    },
-    checkFail: function(row) {
-      checkFailApi({ refundId: row.refundId }).then(r => {
-        this.$message({
-          message: '操作成功',
-          type: 'success'
-        })
-        this.search()
-      })
-    },
-    checkPass: function(row) {
-      checkPassApi({ refundId: row.refundId }).then(r => {
-        this.$message({
-          message: '操作成功',
-          type: 'success'
-        })
-        this.search()
-      })
-    },
-    toShip: function(row) {
-      toShipApi({ refundId: row.refundId }).then(r => {
-        this.$message({
-          message: '操作成功',
-          type: 'success'
-        })
-        this.search()
-      })
     }
   }
 }

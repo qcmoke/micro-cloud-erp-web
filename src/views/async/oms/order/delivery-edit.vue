@@ -116,8 +116,7 @@
                 v-for="item in [
                   { key: 1, name: '支付宝' },
                   { key: 2, name: '微信' },
-                  { key: 3, name: '银联' },
-                  { key: 4, name: '货到付款' }
+                  { key: 3, name: '银联' }
                 ]"
                 :key="item.key"
                 :label="item.name"

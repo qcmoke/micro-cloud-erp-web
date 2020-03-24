@@ -176,7 +176,7 @@
               size="mini"
               round
               @click="toApplyCheck(row)"
-            >申请</el-button>
+            >收货</el-button>
             <el-button
               type="danger"
               size="mini"
@@ -214,6 +214,7 @@
       @close="dialog.isVisible = false"
     />
     <refund-form
+      ref="refundForm"
       :dialog-visible="refundFormDialog.isVisible"
       :master-id="refundFormDialog.masterId"
       @success="search"
@@ -411,6 +412,7 @@ export default {
     toRefund: function(row) {
       this.refundFormDialog.isVisible = true
       this.refundFormDialog.masterId = row.masterId
+      this.$refs.refundForm.setRow({ ...row })
     }
   }
 }

@@ -93,34 +93,10 @@ const constTestMenuRouter = [
     hidden: false,
     children: [
       {
-        path: '/test/tableTest',
-        component: 'test/tableTest',
-        name: 'tableTest测试页面',
-        meta: { title: 'tableTest测试页面', icon: '', breadcrumb: true },
-        hidden: false,
-        alwaysShow: false
-      },
-      {
         path: '/test/requestTest',
         component: 'test/requestTest',
         name: 'requestTest测试页面',
         meta: { title: 'requestTest测试页面', icon: '', breadcrumb: true },
-        hidden: false,
-        alwaysShow: false
-      },
-      {
-        path: '/test/testRadioGroup',
-        component: 'test/testRadioGroup',
-        name: 'testRadioGroup测试页面',
-        meta: { title: 'testRadioGroup测试页面', icon: '', breadcrumb: true },
-        hidden: false,
-        alwaysShow: false
-      },
-      {
-        path: '/test/dialogIndex',
-        component: 'test/dialogIndex',
-        name: 'dialogIndex',
-        meta: { title: 'dialogIndex', icon: '', breadcrumb: true },
         hidden: false,
         alwaysShow: false
       }

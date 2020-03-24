@@ -137,24 +137,9 @@ export function pageMaterialRefundApi(params) {
   })
 }
 
-export function toShipApi(params) {
+export function batchDeleteMaterialRefundApi(ids) {
   return request({
-    url: '/pms/materialRefund/toShip',
-    method: 'put',
-    params
-  })
-}
-export function checkPassApi(params) {
-  return request({
-    url: '/pms/materialRefund/checkPass',
-    method: 'put',
-    params
-  })
-}
-export function checkFailApi(params) {
-  return request({
-    url: '/pms/materialRefund/checkFail',
-    method: 'put',
-    params
+    url: `/pms/materialRefund/${ids}`,
+    method: 'delete'
   })
 }

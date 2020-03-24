@@ -176,7 +176,7 @@
               <el-dropdown-item
                 :disabled="row.status != 4"
                 @click.native="transferToStock(row.masterId)"
-              >移交仓库</el-dropdown-item>
+              >移仓库并记入财务</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>

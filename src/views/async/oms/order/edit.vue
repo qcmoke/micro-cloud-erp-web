@@ -76,7 +76,7 @@
               status-icon
             >
               <el-form-item label="选择客户" prop="customerId">
-                <el-select v-model="postForm.customerId" placeholder="请选择">
+                <el-select v-model="postForm.customerId" placeholder="请选择" style="width:100%">
                   <el-option
                     v-for="item in allCustomers"
                     :key="item.customerId"
@@ -86,15 +86,16 @@
                 </el-select>
               </el-form-item>
 
-              <el-form-item label="支付状态" prop="isPayStatus">
-                <el-switch
-                  v-model="postForm.isPayStatus"
-                  active-color="#13ce66"
-                  inactive-color="#ff4949"
-                />
+              <el-form-item label="订单金额" prop="totalAmount">
+                <el-input v-model.number="postForm.totalAmount" />
               </el-form-item>
               <el-form-item
-                v-if="postForm.isPayStatus"
+                label="运输费用"
+                prop="freightAmount"
+              >
+                <el-input v-model.number="postForm.freightAmount" />
+              </el-form-item>
+              <el-form-item
                 label="支付类型"
                 prop="payType"
               >
@@ -102,13 +103,13 @@
                   v-model="postForm.payType"
                   placeholder="请选择"
                   size="mini"
+                  style="width:100%"
                 >
                   <el-option
                     v-for="item in [
                       { key: 1, name: '支付宝' },
                       { key: 2, name: '微信' },
-                      { key: 3, name: '银联' },
-                      { key: 4, name: '货到付款' }
+                      { key: 3, name: '银联' }
                     ]"
                     :key="item.key"
                     :label="item.name"
@@ -117,7 +118,6 @@
                 </el-select>
               </el-form-item>
               <el-form-item
-                v-if="postForm.isPayStatus"
                 label="发票类型"
                 prop="billType"
               >
@@ -125,6 +125,7 @@
                   v-model="postForm.billType"
                   placeholder="请选择"
                   size="mini"
+                  style="width:100%"
                 >
                   <el-option
                     v-for="item in [
@@ -139,24 +140,11 @@
                 </el-select>
               </el-form-item>
               <el-form-item
-                v-if="
-                  postForm.isPayStatus &&
-                    (postForm.billType === 2 || postForm.billType === 3)
-                "
+                v-if="postForm.billType !== 1"
                 label="发票内容"
                 prop="billContent"
               >
                 <el-input v-model="postForm.billContent" />
-              </el-form-item>
-              <el-form-item label="订单金额" prop="totalAmount">
-                <el-input v-model.number="postForm.totalAmount" />
-              </el-form-item>
-              <el-form-item
-                v-if="postForm.isPayStatus"
-                label="运输费用"
-                prop="freightAmount"
-              >
-                <el-input v-model.number="postForm.freightAmount" />
               </el-form-item>
               <el-form-item label="收货人姓名" prop="receiverName">
                 <el-input v-model="postForm.receiverName" />
@@ -169,6 +157,14 @@
               </el-form-item>
               <el-form-item label="订单备注" prop="remark">
                 <el-input v-model="postForm.remark" />
+              </el-form-item>
+              <el-form-item label="支付状态" prop="isPayStatus">
+                <!-- 如果是货到付款，那么支付状态固定为false，并禁用 -->
+                <el-switch
+                  v-model="postForm.isPayStatus"
+                  active-color="#13ce66"
+                  inactive-color="#ff4949"
+                />
               </el-form-item>
             </el-form>
             <el-row type="flex" class="row-bg" justify="end">
@@ -251,11 +247,8 @@ export default {
     }
   },
   watch: {
-    'postForm.isPayStatus': function(n, o) {
-      if (!n) {
-        this.postForm.payType = null
-        this.postForm.freightAmount = null
-        this.postForm.billType = null
+    'postForm.billType': function(n, o) {
+      if (n === 1) {
         this.postForm.billContent = null
       }
     },
@@ -352,7 +345,7 @@ export default {
         createOrUpdateSaleOrderApi(data)
           .then(r => {
             this.$message({
-              message: '创建成功',
+              message: '保存成功',
               type: 'success'
             })
             this.loading = false

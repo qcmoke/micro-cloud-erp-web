@@ -1,5 +1,5 @@
 module.exports = {
-  title: 'M-ERP',
+  title: 'MC-ERP',
   // Spring Boot Admin控制台地址
   springBootAdminUrl: 'http://localhost:8401',
   // Swagger UI 地址

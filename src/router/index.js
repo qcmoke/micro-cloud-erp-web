@@ -85,16 +85,66 @@ const constRouter = [
  */
 const constTestMenuRouter = [
   {
-    path: '/test',
+    path: '/other/test',
     name: '测试页面',
     component: 'Layout',
-    meta: { title: '测试页面', icon: 'el-icon-set-up', breadcrumb: true },
+    meta: { title: '测试页面', icon: 'el-icon-loading', breadcrumb: true },
     alwaysShow: true,
     hidden: false,
     children: [
       {
-        path: '/test/requestTest',
-        component: 'test/requestTest',
+        'path': '/other/two',
+        'name': '二级菜单',
+        'component': 'other/test/two/Index',
+        'meta': {
+          'title': '二级菜单',
+          icon: 'el-icon-takeaway-box',
+          'breadcrumb': true
+        },
+        'hidden': false,
+        'alwaysShow': true,
+        'children': [
+          {
+            'path': '/other/three',
+            'name': '三级菜单',
+            'component': 'other/test/two/three/Index',
+            'meta': {
+              'title': '三级菜单',
+              'icon': '',
+              'breadcrumb': true
+            },
+            'hidden': false,
+            'alwaysShow': false
+          }
+        ]
+      },
+      {
+        'path': '/other/markdown',
+        'name': 'MarkDown',
+        'component': 'other/test/markdown',
+        'meta': {
+          'title': 'MarkDown',
+          'icon': '',
+          'breadcrumb': true
+        },
+        'hidden': false,
+        'alwaysShow': false
+      },
+      {
+        'path': '/other/tinymce',
+        'name': '富文本编辑器',
+        'component': 'other/test/tinymce',
+        'meta': {
+          'title': '富文本编辑器',
+          'icon': '',
+          'breadcrumb': true
+        },
+        'hidden': false,
+        'alwaysShow': false
+      },
+      {
+        path: '/other/test/requestTest',
+        component: 'other/test/requestTest',
         name: 'requestTest测试页面',
         meta: { title: 'requestTest测试页面', icon: '', breadcrumb: true },
         hidden: false,

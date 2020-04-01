@@ -1,7 +1,9 @@
 <template>
-  <div>
+  <div class="app-container">
+
     <el-select
       v-model="value"
+      size="mini"
       class="select"
       placeholder="请选择年份"
       @change="handleChange"
@@ -88,7 +90,6 @@ export default {
 }
 .chart-container {
   position: relative;
-  width: 100%;
   height: calc(100vh - 65px);
 }
 </style>

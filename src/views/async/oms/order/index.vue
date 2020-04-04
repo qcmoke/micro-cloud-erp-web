@@ -71,8 +71,12 @@
       />
       <el-table-column prop="totalAmount" align="center" label="总金额" />
       <el-table-column prop="freightAmount" align="center" label="运费" />
-      <el-table-column prop="payTypeInfo" align="center" label="支付状态" />
-      <el-table-column prop="statusInfo" align="center" label="订单状态" />
+      <el-table-column prop="payTypeInfo" align="center" label="支付类型" />
+      <el-table-column prop="payStatusInfo" align="center" label="支付状态" />
+      <el-table-column prop="stockCheckStatusInfo" align="center" label="仓库审核状态" />
+      <el-table-column prop="outStatusInfo" align="center" label="发货状态" />
+      <el-table-column prop="receiveStatusInfo" align="center" label="客户收货状态" />
+      <el-table-column prop="finishStatusInfo" align="center" label="完成状态" />
       <el-table-column prop="receiverName" align="center" label="收货人姓名" />
       <el-table-column
         prop="receiverPhone"
@@ -108,12 +112,6 @@
         align="center"
         label="支付时间"
         min-width="155px"
-      />
-      <el-table-column
-        header-align="center"
-        align="center"
-        prop="transferStockStatusInfo"
-        label="移交仓库状态"
       />
       <el-table-column
         prop="deliveryTime"
@@ -206,7 +204,6 @@ export default {
       query: {
         pageNum: 1,
         pageSize: 5,
-        status: 0,
         materialName: null
       },
       pageResult: {
@@ -280,7 +277,7 @@ export default {
       this.dialog.isVisible = true
     },
     edit: function(row) {
-      if (row.status >= 2) {
+      if (row.payStatus === 2) {
         this.$message({
           message: '该订单已经付款，不能修改',
           type: 'warning'
@@ -292,7 +289,7 @@ export default {
       this.dialog.isVisible = true
     },
     singleDelete: function(row) {
-      if (row.status >= 2) {
+      if (row.payStatus === 2) {
         this.$message({
           message: '该订单已经付款，不能修改',
           type: 'warning'
@@ -304,9 +301,9 @@ export default {
     },
     batchDelete: function() {
       for (const elm of this.selection) {
-        if (elm.status >= 2) {
+        if (elm.payStatus === 2) {
           this.$message({
-            message: '该订单已经付款，不能修改',
+            message: '该订单已经付款，不能删除',
             type: 'warning'
           })
           return

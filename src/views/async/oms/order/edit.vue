@@ -272,7 +272,7 @@ export default {
         // Object.assign(target,…sources) 有相同的key时，在target对象中的值会被后面source对象的值覆盖
         Object.assign(this.postForm, { ...dtoInfo })
         const details = dtoInfo.details
-        this.postForm.isPayStatus = dtoInfo.status === 2
+        this.postForm.isPayStatus = dtoInfo.payStatus === 2
         if (details) {
           this.tableDetails = details.map(detailVo => {
             // 让列表产品与明细产品相同id的，让其不可选
@@ -297,7 +297,6 @@ export default {
     initPostForm: function() {
       return {
         totalAmount: 0,
-        status: null,
         isPayStatus: false,
         details: [],
         billType: null,

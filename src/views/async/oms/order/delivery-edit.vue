@@ -204,36 +204,36 @@ export default {
       handler: function(n, o) {
         this.receiverPostForm = {
           ...n,
-          isReceived: n.status && n.status >= 5
+          isReceived: n.receiveStatus === 2
         }
         this.step.stepActive = 0
 
         // 申请发货
-        if (n.transferStockStatus === 2) {
+        if (n.stockCheckStatus === 2) {
           this.step.stepActive = 0
         }
 
         // 申请完成
-        if (n.transferStockStatus === 2) {
+        if (n.stockCheckStatus === 2) {
           this.step.stepActive = 1
         }
         // 仓库审核
-        if (n.transferStockStatus === 3) {
+        if (n.stockCheckStatus === 3) {
           this.step.stepActive = 2
           this.step.checkResult = '审核不通过'
         }
         // 仓库审核完成
-        if (n.transferStockStatus === 4) {
+        if (n.stockCheckStatus === 4) {
           this.step.stepActive = 2
           this.step.checkResult = '审核通过'
         }
 
-        // 仓库发货
-        if (n.transferStockStatus === 4 && n.status < 3) {
+        // 审核完未发货
+        if (n.stockCheckStatus === 4 && n.outStatus !== 2) {
           this.step.stepActive = 3
         }
         // 仓库发货
-        if (n.status >= 3) {
+        if (n.stockCheckStatus === 4 && n.outStatus === 2) {
           this.step.stepActive = 4
         }
         this.applyForDeliveryPostForm.masterId = n.masterId

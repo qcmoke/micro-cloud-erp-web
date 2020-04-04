@@ -43,6 +43,12 @@
           :rules="{ required: true, message: '不能为空' }"
         />
       </el-form-item>
+      <el-form-item label="安全余额量" prop="safetyAmount">
+        <el-input
+          v-model.number="account.safetyAmount"
+          :rules="{ required: true, message: '不能为空' }"
+        />
+      </el-form-item>
       <el-form-item label="是否默认" prop="isDefault">
         <el-input
           v-model="account.isDefault"

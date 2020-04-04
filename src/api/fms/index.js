@@ -28,9 +28,9 @@ export function batchDeleteAccountApi(ids) {
   })
 }
 
-export function saveOrUpdate(params) {
+export function saveOrUpdateAccountApi(params) {
   return request({
-    url: '/fms/account',
+    url: '/fms/account/saveOrUpdate',
     method: 'post',
     data: params
   })

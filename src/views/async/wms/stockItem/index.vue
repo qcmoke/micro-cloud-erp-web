@@ -49,7 +49,7 @@
         label="出入库类型"
         min-width="100px"
       />
-      <el-table-column prop="orderId" label="订单编号" min-width="150px" />
+      <el-table-column prop="dealId" label="交易编号" min-width="150px" />
       <el-table-column prop="makeDate" label="出入库时间" min-width="150px" />
       <el-table-column prop="itemTypeInfo" label="货物类型" min-width="100px" />
       <el-table-column

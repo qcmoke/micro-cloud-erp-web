@@ -40,8 +40,10 @@
     >
       <el-table-column type="selection" align="center" width="40px" />
       <el-table-column prop="saleOrderMasterId" label="订单主表编号" min-width="180px" />
-      <el-table-column prop="refundChannel" label="退款渠道" min-width="160px" />
       <el-table-column prop="totalAmount" label="退款金额" min-width="100px" />
+      <el-table-column prop="refundChannelInfo" label="退款渠道" min-width="160px" />
+      <el-table-column prop="stockCheckStatusInfo" label="仓库审核状态" min-width="100px" />
+      <el-table-column prop="stockInStatusInfo" label="入库状态" min-width="100px" />
       <el-table-column prop="refundDate" label="退货时间" min-width="180px" />
       <el-table-column prop="reason" label="退货原因" min-width="120px" />
       <el-table-column

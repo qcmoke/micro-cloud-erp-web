@@ -44,6 +44,8 @@
         label="退款渠道"
         min-width="150px"
       />
+      <el-table-column prop="stockCheckStatusInfo" label="仓库审核状态" min-width="100px" />
+      <el-table-column prop="stockOutStatusInfo" label="入库状态" min-width="100px" />
       <el-table-column prop="totalAmount" label="退订金额" min-width="80px" />
       <el-table-column prop="reason" label="退货原因" min-width="180px" />
       <el-table-column prop="createTime" label="创建时间" min-width="150px" />

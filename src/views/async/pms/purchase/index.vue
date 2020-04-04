@@ -181,7 +181,6 @@
               type="danger"
               size="mini"
               round
-              :disabled="row.status != 1 && row.status != 3"
               @click.native="toRefund(row)"
             >退订</el-button>
           </span>

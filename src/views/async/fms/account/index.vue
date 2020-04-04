@@ -44,6 +44,7 @@
       <el-table-column prop="bankName" label="交易平台" min-width="80px" />
       <el-table-column prop="bankNum" label="交易平台账号" min-width="150px" />
       <el-table-column prop="amount" label="余额" min-width="180px" />
+      <el-table-column prop="safetyAmount" label="安全余额量" min-width="180px" />
       <el-table-column prop="isDefault" label="是否默认" min-width="150px" />
       <el-table-column prop="createTime" label="创建时间" min-width="150px" />
       <el-table-column prop="modifyTime" label="修改时间" min-width="150px" />

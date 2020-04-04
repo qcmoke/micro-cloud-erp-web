@@ -125,9 +125,9 @@ export function saveOrUpdateSupplierApi(params) {
 /** 退单管理 */
 export function createRefuseApi(params) {
   return request({
-    url: '/pms/materialRefund',
+    url: '/pms/materialRefund/createRefund',
     method: 'post',
-    data: qs.stringify(params)
+    data: params
   })
 }
 

@@ -15,12 +15,24 @@
         :value="item.value"
       />
     </el-select>
-    <div class="chart-container">
-      <finance-chart :chart-data="chartData" />
-    </div>
-    <div class="chart-container">
-      <order-chart :chart-data="chartData" />
-    </div>
+
+    <el-row :gutter="8">
+      <el-col :xs="24" :sm="12">
+        <div class="app-container">
+          <div class="chart-container">
+            <finance-chart :chart-data="chartData" />
+          </div>
+        </div>
+      </el-col>
+      <el-col :xs="24" :sm="12">
+        <div class="app-container">
+          <div class="chart-container">
+            <order-chart :chart-data="chartData" />
+          </div>
+        </div>
+      </el-col>
+    </el-row>
+
   </div>
 </template>
 
@@ -90,6 +102,6 @@ export default {
 }
 .chart-container {
   position: relative;
-  height: calc(100vh - 65px);
+  height: 400px;
 }
 </style>

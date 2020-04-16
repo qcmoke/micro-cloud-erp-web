@@ -1,11 +1,17 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input
-        v-model="query.materialName"
-        placeholder="名称"
-        class="filter-item search-item"
+      <el-date-picker
+        v-model="queryCreateTimes"
+        type="daterange"
+        align="right"
+        unlink-panels
+        range-separator="至"
+        start-placeholder="开始日期"
+        end-placeholder="结束日期"
+        class="filter-item"
       />
+
       <el-button class="filter-item" type="primary" plain @click="search">
         {{ $t("table.search") }}
       </el-button>
@@ -118,13 +124,20 @@
         label="操作员"
         min-width="80px"
       />
-      <el-table-column
+
+      <el-table-column prop="payStatusInfo" align="center" label="支付状态" />
+      <el-table-column prop="purchaseCheckStatusInfo" align="center" label="采购审批状态" />
+      <el-table-column prop="stockCheckStatusInfo" align="center" label="仓库审核状态" />
+      <el-table-column prop="inStatusInfo" align="center" label="入库状态" />
+      <el-table-column prop="finishStatusInfo" align="center" label="完成状态" />
+
+      <!-- <el-table-column
         prop="payStatus"
         align="center"
         label="支付状态"
         min-width="80px"
         :formatter="(r, c) => (r.payStatus === 2 ? '已支付' : '未支付')"
-      />
+      /> -->
       <el-table-column prop="payTypeInfo" label="支付类型" min-width="80px" />
       <el-table-column
         prop="purchaseDate"
@@ -132,18 +145,7 @@
         label="支付时间"
         min-width="155px"
       />
-      <el-table-column
-        prop="statusInfo"
-        label="入库状态"
-        min-width="100px"
-        align="center"
-      />
-      <el-table-column
-        prop="transferStockStatusInfo"
-        label="移交状态"
-        min-width="100px"
-        align="center"
-      />
+
       <el-table-column
         label="备注"
         prop="remark"
@@ -171,12 +173,11 @@
         <template slot-scope="{ row }">
           <span class="btn-row">
             <el-button
-              :disabled="row.status != 1 && row.status != 3"
               type="success"
               size="mini"
               round
               @click="toApplyCheck(row)"
-            >收货</el-button>
+            >审批申请</el-button>
             <el-button
               type="danger"
               size="mini"
@@ -240,8 +241,8 @@ export default {
       query: {
         pageNum: 1,
         pageSize: 5,
-        status: 0,
-        materialName: null
+        createTimeFrom: null,
+        createTimeTo: null
       },
       pageResult: {
         row: [],
@@ -255,7 +256,8 @@ export default {
       refundFormDialog: { isVisible: false, masterId: null },
       selection: [],
       loading: false,
-      tableKey: 0
+      tableKey: 0,
+      queryCreateTimes: []
     }
   },
   computed: {},
@@ -277,6 +279,8 @@ export default {
     },
     fetch: function() {
       this.loading = true
+      this.query.createTimeFrom = this.queryCreateTimes[0]
+      this.query.createTimeTo = this.queryCreateTimes[1]
       const params = this.query
       pagePurchaseOrderMasterApi(params)
         .then(r => {
@@ -291,7 +295,9 @@ export default {
       this.fetch()
     },
     reset: function() {
-      this.query.materialName = null
+      this.queryCreateTimes = []
+      this.query.createTimeFrom = null
+      this.query.createTimeTo = null
       this.$refs.table.clearSort()
       this.$refs.table.clearFilter()
       this.search()
@@ -302,7 +308,7 @@ export default {
       this.dialog.isVisible = true
     },
     edit: function(row) {
-      if (row.status === 4) {
+      if (row.purchaseCheckStatus === 2) {
         this.$message({
           message: '包含已审核通过的订单，不允许修改',
           type: 'warning'
@@ -339,7 +345,7 @@ export default {
     batchDelete: function() {
       var canDelete = true
       this.selection.forEach(elm => {
-        if (elm.status === 4) {
+        if (elm.purchaseCheckStatus === 2) {
           canDelete = false
         }
       })

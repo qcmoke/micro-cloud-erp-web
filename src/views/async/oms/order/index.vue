@@ -1,11 +1,17 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input
-        v-model="query.materialName"
-        placeholder="名称"
-        class="filter-item search-item"
+      <el-date-picker
+        v-model="queryCreateTimes"
+        type="daterange"
+        align="right"
+        unlink-panels
+        range-separator="至"
+        start-placeholder="开始日期"
+        end-placeholder="结束日期"
+        class="filter-item"
       />
+
       <el-button class="filter-item" type="primary" plain @click="search">
         {{ $t("table.search") }}
       </el-button>
@@ -230,7 +236,8 @@ export default {
       refundFormDialog: { isVisible: false, masterId: null },
       selection: [],
       loading: false,
-      tableKey: 0
+      tableKey: 0,
+      queryCreateTimes: null
     }
   },
   computed: {},

@@ -8,7 +8,7 @@
         :range-separator="null"
         :start-placeholder="$t('table.user.createTime')"
         value-format="yyyy-MM-dd"
-        class="filter-item search-item date-range-item"
+        class="filter-item"
         type="daterange"
       />
       <el-button class="filter-item" type="primary" plain @click="search">

@@ -44,12 +44,6 @@ export function pagePurchaseOrderMasterApi(params) {
   })
 }
 
-export function pagePurchaseOrderMasterForAddStockApi(params) {
-  return request.get('/pms/purchaseOrderMaster/pageForAddStock', {
-    params: params
-  })
-}
-
 export function createOrUpdatePurchaseOrderApi(params) {
   return request({
     url: '/pms/purchaseOrderMaster/createOrUpdatePurchaseOrder',
@@ -86,9 +80,9 @@ export function checkPassPurchaseOrderMasterApi(masterId) {
   })
 }
 
-export function transferToStockApi(masterId) {
+export function applyToStockApi(masterId) {
   return request({
-    url: `/pms/purchaseOrderMaster/transferToStock/${masterId}`,
+    url: `/pms/purchaseOrderMaster/applyToStock/${masterId}`,
     method: 'put'
   })
 }

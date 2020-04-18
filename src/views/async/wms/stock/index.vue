@@ -2,8 +2,8 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input
-        v-model="query.materialName"
-        placeholder="名称"
+        v-model="query.itemNameKey"
+        placeholder="货物名称"
         class="filter-item search-item"
       />
       <el-button class="filter-item" type="primary" plain @click="search">
@@ -80,7 +80,7 @@ export default {
       query: {
         pageNum: 1,
         pageSize: 5,
-        materialName: null
+        itemNameKey: null
       },
       pageResult: {
         row: [],
@@ -122,7 +122,7 @@ export default {
       this.dialog.isVisible = true
     },
     reset: function() {
-      this.query.materialName = null
+      this.query.itemNameKey = null
       this.$refs.table.clearSort()
       this.$refs.table.clearFilter()
       this.search()

@@ -210,7 +210,8 @@ export default {
       query: {
         pageNum: 1,
         pageSize: 5,
-        materialName: null
+        createTimeFrom: null,
+        createTimeTo: null
       },
       pageResult: {
         row: [],
@@ -237,7 +238,7 @@ export default {
       selection: [],
       loading: false,
       tableKey: 0,
-      queryCreateTimes: null
+      queryCreateTimes: []
     }
   },
   computed: {},
@@ -259,6 +260,10 @@ export default {
     },
     fetch: function() {
       this.loading = true
+      if (this.queryCreateTimes.length === 2) {
+        this.query.createTimeFrom = this.queryCreateTimes[0]
+        this.query.createTimeTo = this.queryCreateTimes[1]
+      }
       const params = this.query
       pageSaleOrderMasterApi(params)
         .then(r => {
@@ -273,7 +278,9 @@ export default {
       this.fetch()
     },
     reset: function() {
-      this.query.materialName = null
+      this.queryCreateTimes = []
+      this.query.createTimeFrom = null
+      this.query.createTimeTo = null
       this.$refs.table.clearSort()
       this.$refs.table.clearFilter()
       this.search()

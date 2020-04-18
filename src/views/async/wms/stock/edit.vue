@@ -8,6 +8,14 @@
     width="30%"
   >
     <el-form ref="form" :model="postForm" label-width="100px" :rules="rules">
+
+      <el-form-item label="库存量" prop="itemCount">
+        <el-input
+          v-model.number="postForm.itemCount"
+          placeholder="请输入..."
+        />
+      </el-form-item>
+
       <el-form-item label="库存位置" prop="area">
         <el-input
           v-model="postForm.area"
@@ -17,7 +25,7 @@
 
       <el-form-item label="最大库存量" prop="sMax">
         <el-input
-          v-model="postForm.sMax"
+          v-model.number="postForm.sMax"
           placeholder="请输入..."
         />
       </el-form-item>
@@ -42,11 +50,7 @@ export default {
     },
     dto: {
       type: Object,
-      default: () => ({
-        stockId: null,
-        area: null,
-        smax: null
-      })
+      default: () => this.initPostForm()
     }
   },
   data: function() {
@@ -59,6 +63,11 @@ export default {
           trigger: 'blur'
         },
         sMax: {
+          required: true,
+          message: this.$t('rules.require'),
+          trigger: 'blur'
+        },
+        itemCount: {
           required: true,
           message: this.$t('rules.require'),
           trigger: 'blur'
@@ -82,6 +91,7 @@ export default {
         this.postForm.stockId = n.stockId
         this.postForm.area = n.area
         this.postForm.sMax = n.smax
+        this.postForm.itemCount = n.itemCount
       },
       deep: true
     }
@@ -116,7 +126,8 @@ export default {
       return {
         stockId: null,
         area: null,
-        sMax: null
+        sMax: null,
+        itemCount: null
       }
     }
   }

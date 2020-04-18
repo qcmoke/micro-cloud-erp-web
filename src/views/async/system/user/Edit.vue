@@ -79,9 +79,9 @@
         </el-select>
       </el-form-item>
       <el-form-item :label="$t('table.user.status')" prop="status">
-        <el-radio-group v-model="user.status">
-          <el-radio label="1">{{ $t("common.status.valid") }}</el-radio>
-          <el-radio label="0">{{ $t("common.status.invalid") }}</el-radio>
+        <el-radio-group v-model.number="user.status">
+          <el-radio :label="1">{{ $t("common.status.valid") }}</el-radio>
+          <el-radio :label="0">{{ $t("common.status.invalid") }}</el-radio>
         </el-radio-group>
       </el-form-item>
     </el-form>
@@ -112,7 +112,7 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import {
   createUserApi,
   updateUserApi,
-  checkIsUsernameExistApi,
+  // checkIsUsernameExistApi,
   getDeptListApi,
   getInitRolesoptionsApi
 } from '@/api/ums'
@@ -132,7 +132,7 @@ export default {
   },
   data() {
     return {
-      status: '1',
+      status: 1,
       user: this.initUser(),
       buttonLoading: false,
       screenWidth: 0,
@@ -151,23 +151,23 @@ export default {
             max: 10,
             message: this.$t('rules.range4to10'),
             trigger: 'blur'
-          },
-          {
-            validator: (rule, value, callback) => {
-              if (!this.user.userId) {
-                checkIsUsernameExistApi(value).then(r => {
-                  if (!r.data) {
-                    callback(this.$t('rules.usernameExist'))
-                  } else {
-                    callback()
-                  }
-                })
-              } else {
-                callback()
-              }
-            },
-            trigger: 'blur'
           }
+          // {
+          //   validator: (rule, value, callback) => {
+          //     if (!this.user.userId) {
+          //       checkIsUsernameExistApi(value).then(r => {
+          //         if (!r.data) {
+          //           callback(this.$t('rules.usernameExist'))
+          //         } else {
+          //           callback()
+          //         }
+          //       })
+          //     } else {
+          //       callback()
+          //     }
+          //   },
+          //   trigger: 'blur'
+          // }
         ],
         email: {
           type: 'email',
@@ -231,7 +231,7 @@ export default {
         email: '',
         mobile: '',
         sex: '',
-        status: '1',
+        status: 1,
         deptId: null,
         roleId: []
       }
@@ -274,7 +274,6 @@ export default {
     },
     setUser(val) {
       this.user = { ...val }
-      this.user.status = this.user.status + ''
     },
     close() {
       this.$emit('close')

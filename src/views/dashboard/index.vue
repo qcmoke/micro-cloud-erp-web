@@ -22,7 +22,7 @@
                 </div>
               </div>
             </el-col>
-            <el-col :xs="24" :sm="12">
+            <!-- <el-col :xs="24" :sm="12">
               <div class="user-visits">
                 <el-row style="margin-bottom: .7rem">
                   <el-col :span="4" :offset="4">{{ $t('common.todayIp') }}</el-col>
@@ -47,12 +47,12 @@
                   </el-col>
                 </el-row>
               </div>
-            </el-col>
+            </el-col> -->
           </el-row>
         </div>
       </el-col>
     </el-row>
-    <el-row :gutter="10">
+    <!-- <el-row :gutter="10">
       <el-col :xs="24" :sm="12">
         <div class="app-container">
           <div id="visit-count-chart" style="width: 100%;height: 20rem" />
@@ -64,18 +64,18 @@
           ............................
         </div>
       </el-col>
-    </el-row>
+    </el-row> -->
   </div>
 </template>
 <script>
 import echarts from 'echarts'
 import { parseTime } from '@/utils'
-import countTo from 'vue-count-to'
+// import countTo from 'vue-count-to'
 import resize from '@/components/Charts/mixins/resize'
 
 export default {
   name: 'Dashboard',
-  components: { countTo },
+  // components: { countTo },
   mixins: [resize],
   data() {
     return {

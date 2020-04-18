@@ -1,11 +1,17 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input
-        v-model="query.materialName"
-        placeholder="名称"
-        class="filter-item search-item"
+      <el-date-picker
+        v-model="queryCreateTimes"
+        type="daterange"
+        align="right"
+        unlink-panels
+        range-separator="至"
+        start-placeholder="开始日期"
+        end-placeholder="结束日期"
+        class="filter-item"
       />
+
       <el-button class="filter-item" type="primary" plain @click="search">
         {{ $t("table.search") }}
       </el-button>
@@ -69,7 +75,8 @@ export default {
       query: {
         pageNum: 1,
         pageSize: 5,
-        materialName: null
+        createTimeFrom: null,
+        createTimeTo: null
       },
       pageResult: {
         row: [],
@@ -77,7 +84,8 @@ export default {
       },
       selection: [],
       loading: false,
-      tableKey: 0
+      tableKey: 0,
+      queryCreateTimes: []
     }
   },
   mounted() {
@@ -86,6 +94,10 @@ export default {
   methods: {
     fetch: function() {
       this.loading = true
+      if (this.queryCreateTimes.length === 2) {
+        this.query.createTimeFrom = this.queryCreateTimes[0]
+        this.query.createTimeTo = this.queryCreateTimes[1]
+      }
       const params = this.query
       pageBillApi(params).then(r => {
         this.pageResult = r.data.data
@@ -98,7 +110,9 @@ export default {
       this.fetch()
     },
     reset: function() {
-      this.query.materialName = null
+      this.queryCreateTimes = []
+      this.query.createTimeFrom = null
+      this.query.createTimeTo = null
       this.$refs.table.clearSort()
       this.$refs.table.clearFilter()
       this.search()

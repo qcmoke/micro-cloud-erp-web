@@ -279,8 +279,10 @@ export default {
     },
     fetch: function() {
       this.loading = true
-      this.query.createTimeFrom = this.queryCreateTimes[0]
-      this.query.createTimeTo = this.queryCreateTimes[1]
+      if (this.queryCreateTimes.length === 2) {
+        this.query.createTimeFrom = this.queryCreateTimes[0]
+        this.query.createTimeTo = this.queryCreateTimes[1]
+      }
       const params = this.query
       pagePurchaseOrderMasterApi(params)
         .then(r => {

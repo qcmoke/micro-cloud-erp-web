@@ -83,76 +83,76 @@ const constRouter = [
 /**
  * 静态测试菜单路由(不依赖后端菜单路由)
  */
-const constTestMenuRouter = [
-  {
-    path: '/other/test',
-    name: '测试页面',
-    component: 'Layout',
-    meta: { title: '测试页面', icon: 'el-icon-loading', breadcrumb: true },
-    alwaysShow: true,
-    hidden: false,
-    children: [
-      {
-        'path': '/other/two',
-        'name': '二级菜单',
-        'component': 'other/test/two/Index',
-        'meta': {
-          'title': '二级菜单',
-          icon: 'el-icon-takeaway-box',
-          'breadcrumb': true
-        },
-        'hidden': false,
-        'alwaysShow': true,
-        'children': [
-          {
-            'path': '/other/three',
-            'name': '三级菜单',
-            'component': 'other/test/two/three/Index',
-            'meta': {
-              'title': '三级菜单',
-              'icon': '',
-              'breadcrumb': true
-            },
-            'hidden': false,
-            'alwaysShow': false
-          }
-        ]
-      },
-      {
-        'path': '/other/markdown',
-        'name': 'MarkDown',
-        'component': 'other/test/markdown',
-        'meta': {
-          'title': 'MarkDown',
-          'icon': '',
-          'breadcrumb': true
-        },
-        'hidden': false,
-        'alwaysShow': false
-      },
-      {
-        'path': '/other/tinymce',
-        'name': '富文本编辑器',
-        'component': 'other/test/tinymce',
-        'meta': {
-          'title': '富文本编辑器',
-          'icon': '',
-          'breadcrumb': true
-        },
-        'hidden': false,
-        'alwaysShow': false
-      },
-      {
-        path: '/other/test/requestTest',
-        component: 'other/test/requestTest',
-        name: 'requestTest测试页面',
-        meta: { title: 'requestTest测试页面', icon: '', breadcrumb: true },
-        hidden: false,
-        alwaysShow: false
-      }
-    ]
-  }
-]
+// const constTestMenuRouter = [
+//   {
+//     path: '/other/test',
+//     name: '测试页面',
+//     component: 'Layout',
+//     meta: { title: '测试页面', icon: 'el-icon-loading', breadcrumb: true },
+//     alwaysShow: true,
+//     hidden: false,
+//     children: [
+//       {
+//         'path': '/other/two',
+//         'name': '二级菜单',
+//         'component': 'other/test/two/Index',
+//         'meta': {
+//           'title': '二级菜单',
+//           icon: 'el-icon-takeaway-box',
+//           'breadcrumb': true
+//         },
+//         'hidden': false,
+//         'alwaysShow': true,
+//         'children': [
+//           {
+//             'path': '/other/three',
+//             'name': '三级菜单',
+//             'component': 'other/test/two/three/Index',
+//             'meta': {
+//               'title': '三级菜单',
+//               'icon': '',
+//               'breadcrumb': true
+//             },
+//             'hidden': false,
+//             'alwaysShow': false
+//           }
+//         ]
+//       },
+//       {
+//         'path': '/other/markdown',
+//         'name': 'MarkDown',
+//         'component': 'other/test/markdown',
+//         'meta': {
+//           'title': 'MarkDown',
+//           'icon': '',
+//           'breadcrumb': true
+//         },
+//         'hidden': false,
+//         'alwaysShow': false
+//       },
+//       {
+//         'path': '/other/tinymce',
+//         'name': '富文本编辑器',
+//         'component': 'other/test/tinymce',
+//         'meta': {
+//           'title': '富文本编辑器',
+//           'icon': '',
+//           'breadcrumb': true
+//         },
+//         'hidden': false,
+//         'alwaysShow': false
+//       },
+//       {
+//         path: '/other/test/requestTest',
+//         component: 'other/test/requestTest',
+//         name: 'requestTest测试页面',
+//         meta: { title: 'requestTest测试页面', icon: '', breadcrumb: true },
+//         hidden: false,
+//         alwaysShow: false
+//       }
+//     ]
+//   }
+// ]
 
 /**
  * 实例化路由表并初始化静态路由
@@ -214,10 +214,10 @@ router.beforeEach((to, from, next) => {
     const permissions = res.data.data.permissions
     store.commit('account/setPermissions', permissions)
     asyncRouter = res.data.data.routes
-    // 添加静态测试菜单
-    constTestMenuRouter.forEach(it => {
-      asyncRouter.push(it)
-    })
+    // // 添加静态测试菜单
+    // constTestMenuRouter.forEach(it => {
+    //   asyncRouter.push(it)
+    // })
     // 在动态路由的最后添加404路由
     asyncRouter.push({
       path: '*',
